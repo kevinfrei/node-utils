@@ -1,0 +1,36 @@
+// @flow
+// @format
+'use strict'; // NodeJS modules
+
+const path = require('path');
+
+const ofs = require('fs');
+
+const os = require('os');
+
+const util = require('util');
+
+const fs = {
+  readFileAsync: util.promisify(ofs.readFile),
+  writeFileAsync: util.promisify(ofs.writeFile),
+  ...ofs
+}; // My modules
+
+const {
+  FTON
+} = require('my-utils'); // Some Flow types & whatnot
+
+
+import type { FTONData } from 'my-utils';
+declare var GetFilePath: (name: string) => string;
+declare var Get: (name: string) => ?FTONData;
+declare var GetAsync: (name: string) => Promise<?FTONData>;
+declare var Save: (name: string, data: FTONData) => boolean;
+declare var SaveAsync: (name: string, data: FTONData) => Promise<boolean>;
+module.exports = {
+  Get,
+  GetAsync,
+  Save,
+  SaveAsync,
+  GetFilePath
+};

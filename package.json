@@ -1,0 +1,21 @@
+{
+  "name": "my-node-utils",
+  "version": "0.0.11",
+  "description": "My personal set of utilities",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "babelify",
+    "prepare": "yarn run build"
+  },
+  "repository": "https://github.com/kevinfrei/node-freik-utils.git",
+  "author": "Kevin Frei (kevinfrei@hotmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "my-utils": "file:../js-freik-utils"
+  },
+  "devDependencies": {
+    "build-tools": "file:../build-tools",
+    "jest": "^24.9.0"
+  }
+}
