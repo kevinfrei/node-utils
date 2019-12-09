@@ -9,7 +9,7 @@
   },
   "repository": "https://github.com/kevinfrei/node-freik-utils.git",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
-  "license": "MIT",
+  "license": "Unlicense",
   "dependencies": {
     "fs-extra": "^8.1.0",
     "my-utils": "file:../js-freik-utils"
