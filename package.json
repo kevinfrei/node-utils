@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "build-tools": "file:../build-tools",
+    "flow-bin": "^0.114.0",
     "jest": "^24.9.0"
   }
 }
