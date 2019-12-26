@@ -5,7 +5,7 @@ const path = require('path');
 
 const os = require('os');
 
-declare var getTemp: (name: string, ext: string) => string;
+declare var getTemp: (name: string, ext: ?string) => string;
 declare var getExtNoDot: (fileName: string) => string;
 declare var changeExt: (fileName: string, newExt: string) => string;
 module.exports = {

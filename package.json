@@ -1,6 +1,6 @@
 {
   "name": "my-node-utils",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "My personal set of utilities",
   "main": "./lib/index.js",
   "scripts": {
@@ -12,7 +12,8 @@
   "license": "Unlicense",
   "dependencies": {
     "fs-extra": "^8.1.0",
-    "my-utils": "file:../js-freik-utils"
+    "my-utils": "file:../js-freik-utils",
+    "simplelogger": "file:../simplelogger"
   },
   "devDependencies": {
     "build-tools": "file:../build-tools",

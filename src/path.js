@@ -4,8 +4,9 @@
 const path = require('path');
 const os = require('os');
 
-const getTemp = (name: string, ext: string): string => {
-  return path.join(os.tmpdir(), name + '-tmp-' + process.pid + '.' + ext);
+const getTemp = (name: string, ext: ?string): string => {
+  const extension: string = ext && ext[0] !== '.' ? '.' + ext : ext ? ext : '';
+  return path.join(os.tmpdir(), name + '-tmp-' + process.pid + extension);
 };
 
 const getExtNoDot = (fileName: string): string => {

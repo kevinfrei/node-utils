@@ -37,7 +37,10 @@ const toTextFile = (arr: Array<string>, fileName: string): void => {
   fsx.writeFileSync(fileName, str);
 };
 
-const toTextFileAsync = async (arr: Array<string>, fileName: string): Promise<void> => {
+const toTextFileAsync = async (
+  arr: Array<string>,
+  fileName: string
+): Promise<void> => {
   const sep: string = path.sep === '/' ? '\n' : '\r\n';
   const str: string = arr.join(sep);
   await fs.writeFileAsync(fileName, str);
@@ -49,11 +52,13 @@ const textFileToArray = (fileName: string): Array<string> => {
   return resultArray.filter(str => str.trim().length > 0);
 };
 
-const textFileToArrayAsync = async (fileName: string): Promise<Array<string>> => {
+const textFileToArrayAsync = async (
+  fileName: string
+): Promise<Array<string>> => {
   const contents: string = await fs.readFileAsync(fileName, 'utf8');
   const resultArray = contents.split(/\n|\r/);
   return resultArray.filter(str => str.trim().length > 0);
-}
+};
 
 module.exports = {
   size,

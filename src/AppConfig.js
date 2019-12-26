@@ -6,11 +6,10 @@
 const path = require('path');
 const ofs = require('fs');
 const os = require('os');
-const util = require('util');
 
 const fs = {
-  readFileAsync: util.promisify(ofs.readFile),
-  writeFileAsync: util.promisify(ofs.writeFile),
+  readFileAsync: ofs.promises.readFile,
+  writeFileAsync: ofs.promises.writeFile,
   ...ofs
 };
 
@@ -29,7 +28,7 @@ const Get = (name: string): ?FTONData => {
   try {
     const contents: string = fs.readFileSync(configFile, 'utf8');
     return FTON.parse(contents);
-  } catch (e) { }
+  } catch (e) {}
 };
 
 const GetAsync = async (name: string): Promise<?FTONData> => {
@@ -37,7 +36,7 @@ const GetAsync = async (name: string): Promise<?FTONData> => {
   try {
     const contents: string = await fs.readFileAsync(configFile, 'utf8');
     return FTON.parse(contents);
-  } catch (e) { }
+  } catch (e) {}
 };
 
 const Save = (name: string, data: FTONData): boolean => {
@@ -60,4 +59,24 @@ const SaveAsync = async (name: string, data: FTONData): Promise<boolean> => {
   }
 };
 
-module.exports = { Get, GetAsync, Save, SaveAsync, GetFilePath };
+module.exports = {
+  Get,
+  GetSync: Get,
+  GetAsync,
+  Read: Get,
+  ReadSync: Get,
+  ReadAsync: GetAsync,
+  Load: Get,
+  LoadSync: Get,
+  LoadAsync: GetAsync,
+  Save,
+  SaveSync: Save,
+  SaveAsync,
+  Set: Save,
+  SetSync: Save,
+  SetAsync: SaveAsync,
+  Write: Save,
+  WriteSync: Save,
+  WriteAsync: SaveAsync,
+  GetFilePath
+};
