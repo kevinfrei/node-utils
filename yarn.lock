@@ -404,6 +404,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@freik/simplelogger@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@freik/simplelogger/-/simplelogger-1.1.0.tgz#c4d8464b300b731086c7bdb3836832c84a0391fd"
+  integrity sha512-1Vl+Mm+vSRfslfTA5uIa8QNVc8zSvnSCSKksSHpjazZBS2hr++x8tVIyPiDygMuMyqloO29UJSr56ZA1eCWSsQ==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.0.0.tgz#10602de5570baea82f8afbfa2630b24e7a8cfe5b"
@@ -2641,7 +2646,7 @@ ms@^2.1.1:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 "my-utils@file:../js-freik-utils":
-  version "0.1.6"
+  version "0.2.0"
 
 nan@^2.12.1:
   version "2.14.0"
@@ -3221,9 +3226,6 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.3.tgz#a1410c2edd8f077b08b4e253c8eacfcaf057461c"
   integrity sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==
-
-"simplelogger@file:../simplelogger":
-  version "1.0.5"
 
 sisteransi@^1.0.4:
   version "1.0.5"
