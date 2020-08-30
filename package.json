@@ -11,9 +11,9 @@
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
   "dependencies": {
+    "@freik/simplelogger": "^1.1.0",
     "fs-extra": "^9.0.0",
-    "my-utils": "file:../js-freik-utils",
-    "simplelogger": "file:../simplelogger"
+    "my-utils": "file:../js-freik-utils"
   },
   "devDependencies": {
     "build-tools": "file:../build-tools",
