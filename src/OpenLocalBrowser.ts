@@ -1,5 +1,5 @@
 import child_proc from 'child_process';
-import logger from '@freik/simplelogger';
+import { logger } from '@freik/simplelogger';
 
 const log = logger.bind('olb');
 logger.disable('olb');
