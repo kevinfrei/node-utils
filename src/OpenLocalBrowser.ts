@@ -1,8 +1,8 @@
 import child_proc from 'child_process';
-import { logger } from '@freik/simplelogger';
+import { Logger } from '@freik/core-utils';
 
-const log = logger.bind('olb');
-logger.disable('olb');
+const log = Logger.bind('olb');
+Logger.disable('olb');
 
 type BufStr = string | Buffer;
 
