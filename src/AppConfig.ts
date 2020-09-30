@@ -1,6 +1,8 @@
-import path from 'path';
+import type { FTONData } from '@freik/core-utils';
+import { FTON } from '@freik/core-utils';
 import ofs from 'fs';
 import os from 'os';
+import path from 'path';
 
 const fs = {
   readFileAsync: ofs.promises.readFile,
@@ -8,11 +10,6 @@ const fs = {
   readFileSync: ofs.readFileSync,
   writeFileSync: ofs.writeFileSync,
 };
-
-// My modules
-import { FTON } from '@freik/core-utils';
-
-import type { FTONData } from '@freik/core-utils';
 
 export function GetFilePath(name: string): string {
   return path.join(os.homedir(), '.config', `${name}.json`);

@@ -1,14 +1,13 @@
 import cp from 'child_process';
-
-import type { spawnResult } from './index';
+import type { SpawnResult } from './index';
 
 export async function spawnAsync(
   command: string,
   args?: string[],
   options?: cp.SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'pipe'>,
-): Promise<spawnResult> {
-  const res: Promise<spawnResult> = new Promise((resolve, reject) => {
-    const sr: spawnResult = {
+): Promise<SpawnResult> {
+  const res: Promise<SpawnResult> = new Promise((resolve, reject) => {
+    const sr: SpawnResult = {
       output: [],
       stdout: '',
       stderr: '',

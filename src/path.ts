@@ -3,7 +3,7 @@ import os from 'os';
 
 export function getTemp(name: string, ext?: string): string {
   const extension: string = ext && ext[0] !== '.' ? '.' + ext : ext ? ext : '';
-  return path.join(os.tmpdir(), name + '-tmp-' + process.pid + extension);
+  return path.join(os.tmpdir(), `${name}-tmp-${process.pid}${extension}`);
 }
 
 export function getExtNoDot(fileName: string): string {
