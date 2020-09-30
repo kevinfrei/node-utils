@@ -19,24 +19,23 @@ all completely interchangeable:
 
 ```typescript
 // aliases: GetSync, Read, ReadSync, Load, and LoadSync
-function Get(name:string) => ?FTONData; 
+function Get(name:string) => ?FTONData;
 // aliases: ReadAsync, LoadAsync
-function GetAsync(name:string) => Promise<?FTONDatat>; 
+function GetAsync(name:string) => Promise<?FTONDatat>;
 ```
 
-Given a *string* name, returns an optional FTON (FlowTypeObjectNotation :D )
+Given a _string_ name, returns an optional FTON (FlowTypeObjectNotation :D )
 data type, or a promise containing that (for the Async version).
 
 ```typescript
 // aliases: SetSync, Write, WriteSync, Save, SaveSync
-function Set(name:string, data:FTONData) => void; 
+function Set(name:string, data:FTONData) => void;
 // aliases: SaveAsync, WriteAsync
-function SetAsync(name: string, data:FTONData) => Promise<void>; 
+function SetAsync(name: string, data:FTONData) => Promise<void>;
 ```
 
-Given a *string* name and an FTONData type, saves that value for future
+Given a _string_ name and an FTONData type, saves that value for future
 `Get`ting.
-
 
 ## OpenLocalBrowser
 
@@ -49,12 +48,13 @@ not the same thing...)
 ## FileUtil
 
 A few helpful functions:
+
 ```typescript
 function size(filePath:string) => number;
 function sizeAsync(filePath:string) => Promise<number>;
 ```
 
-Return the file size for the *string* path provided.
+Return the file size for the _string_ path provided.
 
 ```typescript
 function arrayToTextFile(arr:Array<string>, filePath:string) => void;
@@ -78,22 +78,25 @@ A couple helpers for path name creation & manipulation:
 ```typescript
 function getTemp(name:string, ext:?string) => string;
 ```
-Given a name, and an optional file extension, return a *likely* unique path to use as a temp file.
 
+Given a name, and an optional file extension, return a _likely_ unique path to use as a temp file.
 
 ```typescript
 function getExtNoDot(fileName:string) => string;
 ```
-Returns the file extension of `fileName` *without* a leading '.' because that's annoying...
 
+Returns the file extension of `fileName` _without_ a leading '.' because that's annoying...
 
 ```typescript
 function changeExt(fileName:string, newExt:string) => string;
 ```
+
 Switches the file extension to `newExt` for the path `fileName`.
 
 ## ProcUtil
+
 3 helpers for spawning processes.
+
 ```typescript
 // Exported from the node-freik-utils module
 type spawnResult = {
@@ -112,4 +115,5 @@ function spawnAsync(command:string, args: ?Array<string>, options:?sO) => Promis
 function spawnRes(command:string, args: ?Array<string>, options:?sSO) => boolean;
 function spawnResAsync(command:string, args:?Array<string>, options:?sO) => Promise<boolean>;
 ```
+
 These three helpers wrap process spawning from `node.child_process` in self-contained blobs. I'm clearly getting sick of writing documentation...
