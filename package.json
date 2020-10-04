@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@freik/core-utils": "^0.5.1"
+    "@freik/core-utils": "^0.6.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
