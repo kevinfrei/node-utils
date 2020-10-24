@@ -4,7 +4,10 @@ import type { SpawnResult } from './index';
 export async function spawnAsync(
   command: string,
   args?: string[],
-  options?: cp.SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'pipe'>,
+  options?:
+    | cp.SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'pipe'>
+    | cp.SpawnOptionsWithoutStdio
+    | cp.SpawnSyncOptions,
 ): Promise<SpawnResult> {
   const res: Promise<SpawnResult> = new Promise((resolve, reject) => {
     const sr: SpawnResult = {
@@ -15,8 +18,8 @@ export async function spawnAsync(
       status: null,
     };
     const child = args
-      ? cp.spawn(command, args, options)
-      : cp.spawn(command, options);
+      ? cp.spawn(command, args, options as any)
+      : cp.spawn(command, options as any);
     child.stdout.on('data', (data: Buffer | string) => {
       // 'close', 'end'
       sr.stdout = sr.stdout.toString() + data.toString();
@@ -46,7 +49,7 @@ export async function spawnAsync(
 export function spawnRes(
   command: string,
   args?: string[],
-  options?: cp.SpawnOptions,
+  options?: cp.SpawnSyncOptions,
 ): boolean {
   if (!args) {
     args = [];
@@ -74,7 +77,10 @@ export function spawnRes(
 export async function spawnResAsync(
   command: string,
   args?: string[],
-  options?: cp.SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'pipe'>,
+  options?:
+    | cp.SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'pipe'>
+    | cp.SpawnOptionsWithoutStdio
+    | cp.SpawnSyncOptions,
 ): Promise<boolean> {
   if (!args) {
     args = [];

@@ -1,5 +1,4 @@
-import type { FTONData } from '@freik/core-utils';
-import { FTON } from '@freik/core-utils';
+import { FTON, FTONData } from '@freik/core-utils';
 import ofs from 'fs';
 import os from 'os';
 import path from 'path';
