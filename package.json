@@ -38,10 +38,10 @@
     }
   },
   "dependencies": {
-    "@freik/core-utils": "^0.7.0"
+    "@freik/core-utils": "^0.9.1"
   },
   "devDependencies": {
-    "@freik/ts-tooling": "^0.0.2"
+    "@freik/ts-tooling": "^0.1.0"
   },
   "eslintConfig": {
     "root": true,
