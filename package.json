@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@freik/core-utils": "^0.9.1"
+    "@freik/core-utils": "^0.9.2"
   },
   "devDependencies": {
     "@freik/ts-tooling": "^0.1.0"
