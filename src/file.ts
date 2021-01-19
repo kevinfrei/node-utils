@@ -1,5 +1,7 @@
 import path from 'path';
 import ofs from 'fs';
+import { promises as fsp } from 'fs';
+import { spawnResAsync } from './process';
 
 const fs = {
   readFileAsync: ofs.promises.readFile,
@@ -53,6 +55,29 @@ export async function textFileToArrayAsync(
   const contents: string = await fs.readFileAsync(fileName, 'utf8');
   const resultArray = contents.split(/\n|\r/);
   return resultArray.filter((str) => str.trim().length > 0);
+}
+
+export async function hideFile(pathName: string): Promise<string> {
+  let targetPath = pathName;
+  const base = path.basename(pathName);
+  // Hide it for macOS & Linux, if it's not already hidden
+  if (!base.startsWith('.')) {
+    targetPath = path.join(
+      path.dirname(pathName),
+      '.' + path.basename(pathName),
+    );
+    await fsp.rename(pathName, targetPath);
+  }
+  // this is pretty gross, and only tested on macOS right now
+  // I'll get around to testing on Windows and implemented it on Linux some day
+  if (process.platform === 'darwin') {
+    await spawnResAsync('chflags', ['hidden', targetPath]);
+  } else if (process.platform === 'win32') {
+    // NYI
+  } else if (process.platform === 'linux') {
+    // NYI: https://superuser.com/questions/321109
+  }
+  return targetPath;
 }
 
 export {
