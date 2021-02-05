@@ -27,7 +27,7 @@
     "lint": "yarn run eslint --fix --ext .ts src",
     "preversion": "yarn run lint",
     "version": "yarn run format && git add -A src",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push && git push --tags --no-verify",
     "compile": "tsc --noEmit",
     "chk": "yarn format && yarn lint && yarn compile && yarn test"
   },
