@@ -1,9 +1,10 @@
-import * as FileUtil from './file';
-import * as PathUtil from './path';
-import * as ProcUtil from './process';
-import * as OpenLocalBrowser from './OpenLocalBrowser';
-import * as AppConfig from './AppConfig';
-import { ForFiles, ForFilesSync } from './forFiles';
+export * as FileUtil from './file';
+export * as PathUtil from './path';
+export * as ProcUtil from './process';
+export * as OpenLocalBrowser from './OpenLocalBrowser';
+export * as AppConfig from './AppConfig';
+export { ForFiles, ForFilesSync } from './forFiles';
+export { Persist, MakePersistence } from './persist';
 
 export type SpawnResult = {
   output: string[]; // Array of results from stdio output.
@@ -12,14 +13,4 @@ export type SpawnResult = {
   signal: string | null; // The signal that terminated the output
   status: number | null; // The exit code of the subprocess, or null if the subprocess terminated due to a signal.
   error?: unknown; // The error
-};
-
-export {
-  AppConfig,
-  FileUtil,
-  PathUtil,
-  ProcUtil,
-  OpenLocalBrowser,
-  ForFiles,
-  ForFilesSync,
 };
