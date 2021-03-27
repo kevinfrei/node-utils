@@ -34,19 +34,19 @@
     "chk": "yarn format && yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.11.0"
+    "@freik/core-utils": "^0.14.0"
   },
   "devDependencies": {
     "@freik/build-tools": "^2.4.1",
     "@freik/ts-tooling": "^0.1.0",
-    "@types/jest": "^26.0.20",
-    "@typescript-eslint/eslint-plugin": "^4.17.0",
-    "eslint": "^7.22.0",
-    "husky": "^5.1.3",
+    "@types/jest": "^26.0.22",
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "eslint": "^7.23.0",
+    "husky": "^5.2.0",
     "jest": "^26.6.3",
     "pinst": "^2.1.6",
     "prettier": "^2.2.1",
-    "ts-jest": "^26.5.3",
+    "ts-jest": "^26.5.4",
     "typescript": "^4.2.3"
   },
   "files": [
