@@ -8,7 +8,7 @@ const err = MakeError('forFiles');
 
 export async function ForFiles(
   seed: string | string[],
-  func: (fileName: string) => Promise<boolean>,
+  func: (fileName: string) => Promise<boolean> | boolean,
   opts?: {
     recurse?: boolean;
     keepGoing?: boolean;
@@ -44,7 +44,11 @@ export async function ForFiles(
     }
     const st = await fsp.stat(i);
     if (st.isFile() && fileMatcher(i)) {
-      if (!(await func(i))) {
+      let res = func(i);
+      if (!Type.isBoolean(res)) {
+        res = await res;
+      }
+      if (res !== true) {
         overallResult = false;
         if (!keepGoing) {
           return false;
