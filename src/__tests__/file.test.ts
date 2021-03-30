@@ -57,10 +57,8 @@ test('hiding a file on MacOS/Windows', async () => {
     const lsAfter = await exec('dir');
     expect(lsAfter.stdout.indexOf(pathName)).toBeLessThan(0);
     const lsHidden = await exec('dir /a');
-    const hidden = lsHidden.stdout.indexOf('hidden');
     const fileLoc = lsHidden.stdout.indexOf(pathName);
-    expect(hidden).toBeLessThan(fileLoc);
-    expect(hidden).toBeGreaterThan(fileLoc - 30);
+    expect(fileLoc).toBeGreaterThan(-1);
     try {
       await fsp.unlink('.' + pathName);
       await fsp.unlink(pathName);
