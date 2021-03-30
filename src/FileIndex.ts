@@ -3,6 +3,7 @@ import { ForFiles } from './forFiles';
 import { MakePersistence, Persist } from './persist';
 import { getExtNoDot } from './path';
 import { mkdir, stat } from 'fs/promises';
+import { hideFile } from './file';
 
 const err = MakeError('FileIndex-err');
 
@@ -194,6 +195,8 @@ export async function MakeFileIndex(
   } catch (e) {
     try {
       await mkdir(persister.persist.getLocation(), { recursive: true });
+      // Try to hide the thing, even on Windows, because .files are annoying
+      await hideFile(persister.persist.getLocation());
     } catch (f) {
       /* */
     }
