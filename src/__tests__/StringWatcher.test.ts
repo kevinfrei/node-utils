@@ -64,3 +64,14 @@ it('File Type Watcher Chaining Watch then Ignore', () => {
   expect(ftw.watching('.mp4')).toBe(false);
   expect(ftw.watching('.flac')).toBe(true);
 });
+
+it('File Type Watcher Chaining Watch then Ignore, with direct function call', () => {
+  const ftw = MakeStringWatcher()
+    .addToWatchList('.mp3', ['.flac'])
+    .addToIgnoreList(['.txt'], '.jpg');
+  expect(ftw('.txt')).toBe(false);
+  expect(ftw('.jpg')).toBe(false);
+  expect(ftw('.mp3')).toBe(true);
+  expect(ftw('.flac')).toBe(true);
+  expect(ftw('.mp4')).toBe(false);
+});

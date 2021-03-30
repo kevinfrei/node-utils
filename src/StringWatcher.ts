@@ -1,6 +1,7 @@
 import { Type } from '@freik/core-utils';
 
 export type StringWatcher = {
+  (str: string): boolean;
   addToIgnoreList(
     this: StringWatcher,
     ...types: (string | Iterable<string>)[]
@@ -57,5 +58,8 @@ export function MakeStringWatcher(): StringWatcher {
   function watching(type: string) {
     return !shouldIgnore(type) && shouldWatch(type);
   }
-  return { addToIgnoreList, addToWatchList, watching };
+  watching.addToIgnoreList = addToIgnoreList;
+  watching.addToWatchList = addToWatchList;
+  watching.watching = watching;
+  return watching;
 }
