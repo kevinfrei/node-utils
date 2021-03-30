@@ -8,6 +8,7 @@ const err = MakeError('persist-err', false);
 export type ValueUpdateListener = (val: string) => void;
 
 export type Persist = {
+  getLocation(): string;
   getItem(key: string): string | void;
   getItemAsync(key: string): Promise<string | void>;
   setItem(key: string, value: string): void;
@@ -24,11 +25,11 @@ export function MakePersistence(location: string): Persist {
   const getNextListenerId = SeqNum();
 
   // Here's a place for app settings & stuff...
-  function persistenceLocation(): string {
+  function getLocation(): string {
     return location;
   }
   function storageLocation(id: string): string {
-    return path.join(persistenceLocation(), `${id}.json`);
+    return path.join(getLocation(), `${id}.json`);
   }
 
   log(`User data location: ${storageLocation('test')}`);
@@ -66,7 +67,7 @@ export function MakePersistence(location: string): Persist {
 
   function writeFile(id: string, val: string): void {
     try {
-      fs.mkdirSync(persistenceLocation(), { recursive: true });
+      fs.mkdirSync(getLocation(), { recursive: true });
     } catch (e) {
       /* */
     }
@@ -76,7 +77,7 @@ export function MakePersistence(location: string): Persist {
 
   async function writeFileAsync(id: string, val: string): Promise<void> {
     try {
-      await fsp.mkdir(persistenceLocation(), { recursive: true });
+      await fsp.mkdir(getLocation(), { recursive: true });
     } catch (e) {
       /* */
     }
@@ -186,6 +187,7 @@ export function MakePersistence(location: string): Persist {
     await deleteFileAsync(key);
   }
   return {
+    getLocation,
     getItem,
     getItemAsync,
     setItem,

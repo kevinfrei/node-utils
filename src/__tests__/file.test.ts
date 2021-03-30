@@ -23,9 +23,9 @@ test('array to text file and back again', async () => {
   expect(data).toEqual(result);
 });
 
-test('hiding a file on MacOS', async () => {
+test('hiding a file on MacOS/Windows', async () => {
+  const pathName = 'testFile.empty';
   if (process.platform === 'darwin') {
-    const pathName = 'testFile.empty';
     try {
       await fsp.unlink(pathName);
     } catch (e) {}
@@ -37,6 +37,26 @@ test('hiding a file on MacOS', async () => {
     const lsAfter = await exec('/bin/ls -lO');
     expect(lsAfter.stdout.indexOf(pathName)).toBeLessThan(0);
     const lsHidden = await exec('/bin/ls -laO');
+    const hidden = lsHidden.stdout.indexOf('hidden');
+    const fileLoc = lsHidden.stdout.indexOf(pathName);
+    expect(hidden).toBeLessThan(fileLoc);
+    expect(hidden).toBeGreaterThan(fileLoc - 30);
+    try {
+      await fsp.unlink('.' + pathName);
+      await fsp.unlink(pathName);
+    } catch (e) {}
+  } else if (process.platform === 'win32') {
+    try {
+      await fsp.unlink(pathName);
+    } catch (e) {}
+    await arrayToTextFileAsync(['this', 'is', 'a', 'test'], pathName);
+    const lsBefore = await exec('dir');
+    expect(lsBefore.stdout.indexOf(pathName)).toBeGreaterThanOrEqual(0);
+    const newPath = await hideFile(pathName);
+    expect(newPath).toEqual('.' + pathName);
+    const lsAfter = await exec('dir');
+    expect(lsAfter.stdout.indexOf(pathName)).toBeLessThan(0);
+    const lsHidden = await exec('dir /a');
     const hidden = lsHidden.stdout.indexOf('hidden');
     const fileLoc = lsHidden.stdout.indexOf(pathName);
     expect(hidden).toBeLessThan(fileLoc);
