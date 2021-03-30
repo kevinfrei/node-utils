@@ -1,10 +1,8 @@
-import { FTON, MakeError, Type } from '@freik/core-utils';
+import { MakeError, Type } from '@freik/core-utils';
 import { ForFiles } from './forFiles';
-import { MakePersistence, Persist } from './persist';
 import { getExtNoDot } from './path';
 import path from 'path';
-import { mkdir, stat } from 'fs/promises';
-import { hideFile } from './file';
+import { arrayToTextFileAsync, textFileToArrayAsync } from './file';
 
 const err = MakeError('FileIndex-err');
 
@@ -59,8 +57,7 @@ export function SortedArrayDiff(
 /*
  * Begin crap to deal with overloading and whatnot
  */
-type PersistID = { persist: Persist; id: string };
-type FolderLocation = string | PersistID;
+type FolderLocation = string;
 export type Watcher = (obj: string) => boolean;
 function fileWatcher(obj: unknown): Watcher {
   return Type.isFunction(obj)
@@ -69,24 +66,15 @@ function fileWatcher(obj: unknown): Watcher {
       (o: string) => true;
 }
 // This is used to deal with the weird overloads below
-function getPersister(
+function getIndexLocation(
   defaultLoc: string,
   obj?: Watcher | FolderLocation,
-): PersistID {
-  if (obj !== undefined && !Type.isFunction(obj)) {
-    if (Type.hasStr(obj, 'id') && Type.has(obj, 'persist')) {
-      return obj;
-    } else if (Type.isString(obj)) {
-      return {
-        persist: MakePersistence(path.join(defaultLoc, '.kfi')),
-        id: 'fileList',
-      };
-    }
+): FolderLocation {
+  if (obj !== undefined && !Type.isFunction(obj) && Type.isString(obj)) {
+    return obj;
+  } else {
+    return path.join(defaultLoc, '.fileIndex.txt');
   }
-  return {
-    persist: MakePersistence(path.join(defaultLoc, '.kfi')),
-    id: 'fileList',
-  };
 }
 
 export async function MakeFileIndex(
@@ -104,7 +92,7 @@ export async function MakeFileIndex(
   maybeIndexFolderLocation?: FolderLocation,
 ): Promise<FileIndex> {
   const shouldWatchFile: Watcher = fileWatcher(shouldWatchFileOrFolderLocation);
-  const persister: PersistID = getPersister(
+  const indexFile: FolderLocation = getIndexLocation(
     location,
     maybeIndexFolderLocation || shouldWatchFileOrFolderLocation,
   );
@@ -128,15 +116,8 @@ export async function MakeFileIndex(
   // or directly from the path provided
   async function loadFileIndex(): Promise<boolean> {
     try {
-      const flat = await persister.persist.getItemAsync(persister.id);
-      if (flat) {
-        const fton = FTON.parse(flat);
-        if (Type.isArrayOfString(fton)) {
-          fileList = fton;
-          return true;
-        }
-      }
-      // TODO: Make this check it for validity?
+      fileList = await textFileToArrayAsync(indexFile);
+      return true;
     } catch (e) {
       /* */
     }
@@ -144,8 +125,7 @@ export async function MakeFileIndex(
   }
   async function saveFileIndex(): Promise<boolean> {
     try {
-      const flat = FTON.stringify(fileList);
-      await persister.persist.setItemAsync(persister.id, flat);
+      await arrayToTextFileAsync(fileList, indexFile);
       return true;
     } catch (e) {
       /* */
@@ -173,8 +153,8 @@ export async function MakeFileIndex(
           .substr(theLocation.length)
           .replaceAll('\\', '/');
         if (
-          !filePath.endsWith('/' + persister.id + '.json') &&
-          shouldWatchFile(getExtNoDot(filePath))
+          !filePath.endsWith('/' + path.basename(indexFile)) &&
+          shouldWatchFile(filePath)
         ) {
           // the file path is relative to the root, and should always use /
           newFileList.push(subPath);
@@ -203,18 +183,6 @@ export async function MakeFileIndex(
    * Begin 'constructor' code here:
    *
    */
-  // First, make the persistence location if it doesn't already exist
-  try {
-    await stat(persister.persist.getLocation());
-  } catch (e) {
-    try {
-      await mkdir(persister.persist.getLocation(), { recursive: true });
-      // Try to hide the thing, even on Windows, because .files are annoying
-      await hideFile(persister.persist.getLocation());
-    } catch (f) {
-      /* */
-    }
-  }
   if (!(await loadFileIndex())) {
     fileList = [];
     // Just rebuild the file list, don't do any processing right now
