@@ -2,6 +2,7 @@ import { FTON, MakeError, Type } from '@freik/core-utils';
 import { ForFiles } from './forFiles';
 import { MakePersistence, Persist } from './persist';
 import { getExtNoDot } from './path';
+import path from 'path';
 import { mkdir, stat } from 'fs/promises';
 import { hideFile } from './file';
 
@@ -14,12 +15,12 @@ export type FileIndex = {
   forEachFile: (fn: PathHandler) => void;
   getLastScanTime: () => Date | null;
   // When we rescan files, look at file path diffs
-  rescanFiles: (addFile: PathHandler, delFile: PathHandler) => Promise<void>;
+  rescanFiles: (addFile?: PathHandler, delFile?: PathHandler) => Promise<void>;
 };
 
-function pathCompare(a: string | null, b: string | null): number {
-  if (a === null) return b ? 1 : 0;
-  if (b === null) return a ? -1 : 0;
+export function pathCompare(a: string | null, b: string | null): number {
+  if (a === null) return b !== null ? 1 : 0;
+  if (b === null) return a !== null ? -1 : 0;
   const m = a.toLocaleUpperCase();
   const n = b.toLocaleUpperCase();
   // Don't use localeCompare: it will make some things equal that aren't *quite*
@@ -27,7 +28,7 @@ function pathCompare(a: string | null, b: string | null): number {
 }
 
 /* This requires that both arrays are already sorted */
-function SortedArrayDiff(
+export function SortedArrayDiff(
   oldList: string[],
   newList: string[],
   addFn?: PathHandler,
@@ -60,7 +61,7 @@ function SortedArrayDiff(
  */
 type PersistID = { persist: Persist; id: string };
 type FolderLocation = string | PersistID;
-type Watcher = (obj: string) => boolean;
+export type Watcher = (obj: string) => boolean;
 function fileWatcher(obj: unknown): Watcher {
   return Type.isFunction(obj)
     ? (obj as Watcher)
@@ -68,15 +69,24 @@ function fileWatcher(obj: unknown): Watcher {
       (o: string) => true;
 }
 // This is used to deal with the weird overloads below
-function getPersister(obj?: Watcher | FolderLocation): PersistID {
+function getPersister(
+  defaultLoc: string,
+  obj?: Watcher | FolderLocation,
+): PersistID {
   if (obj !== undefined && !Type.isFunction(obj)) {
     if (Type.hasStr(obj, 'id') && Type.has(obj, 'persist')) {
       return obj;
     } else if (Type.isString(obj)) {
-      return { persist: MakePersistence('.kfi'), id: 'fileList' };
+      return {
+        persist: MakePersistence(path.join(defaultLoc, '.kfi')),
+        id: 'fileList',
+      };
     }
   }
-  return { persist: MakePersistence('.kfi'), id: 'fileList' };
+  return {
+    persist: MakePersistence(path.join(defaultLoc, '.kfi')),
+    id: 'fileList',
+  };
 }
 
 export async function MakeFileIndex(
@@ -90,12 +100,13 @@ export async function MakeFileIndex(
 ): Promise<FileIndex>;
 export async function MakeFileIndex(
   location: string,
-  typesToWatchOrFolderLocation?: Watcher | FolderLocation,
+  shouldWatchFileOrFolderLocation?: Watcher | FolderLocation,
   maybeIndexFolderLocation?: FolderLocation,
 ): Promise<FileIndex> {
-  const typesToWatch: Watcher = fileWatcher(typesToWatchOrFolderLocation);
+  const shouldWatchFile: Watcher = fileWatcher(shouldWatchFileOrFolderLocation);
   const persister: PersistID = getPersister(
-    maybeIndexFolderLocation || typesToWatchOrFolderLocation,
+    location,
+    maybeIndexFolderLocation || shouldWatchFileOrFolderLocation,
   );
   /*
    * End crap to deal with overloading and whatnot
@@ -161,7 +172,10 @@ export async function MakeFileIndex(
         const subPath = filePath
           .substr(theLocation.length)
           .replaceAll('\\', '/');
-        if (typesToWatch(getExtNoDot(filePath))) {
+        if (
+          !filePath.endsWith('/' + persister.id + '.json') &&
+          shouldWatchFile(getExtNoDot(filePath))
+        ) {
           // the file path is relative to the root, and should always use /
           newFileList.push(subPath);
         }
@@ -178,7 +192,7 @@ export async function MakeFileIndex(
     // Alright, we've got the new list, now call the handlers to
     // post-process any differences from the previous list
     if (delFileFn || addFileFn) {
-      // Don't waste time
+      // Don't waste time if we don't have funcs to call...
       SortedArrayDiff(oldFileList, fileList, addFileFn, delFileFn);
     }
     // TODO: Save the new list back to disk in the .emp file index

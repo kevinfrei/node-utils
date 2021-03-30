@@ -6,6 +6,7 @@ export * as AppConfig from './AppConfig';
 export { ForFiles, ForFilesSync } from './forFiles';
 export { Persist, MakePersistence } from './persist';
 export { StringWatcher, MakeStringWatcher } from './StringWatcher';
+export { FileIndex, MakeFileIndex, Watcher } from './FileIndex';
 
 export type SpawnResult = {
   output: string[]; // Array of results from stdio output.

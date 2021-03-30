@@ -70,3 +70,4 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
+**/.kfi

@@ -20,6 +20,7 @@
   "types": "./lib/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
+    "watch": "jest --config jestconfig.json --watch",
     "build": "rimraf lib && tsc",
     "prepare": "yarn run build && minify -i lib",
     "postinstall": "husky install",
@@ -34,7 +35,7 @@
     "chk": "yarn format && yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.14.0"
+    "@freik/core-utils": "^0.14.2"
   },
   "devDependencies": {
     "@freik/build-tools": "^2.4.1",
