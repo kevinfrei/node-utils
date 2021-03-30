@@ -5,6 +5,7 @@ export * as OpenLocalBrowser from './OpenLocalBrowser';
 export * as AppConfig from './AppConfig';
 export { ForFiles, ForFilesSync } from './forFiles';
 export { Persist, MakePersistence } from './persist';
+export { StringWatcher, MakeStringWatcher } from './StringWatcher';
 
 export type SpawnResult = {
   output: string[]; // Array of results from stdio output.

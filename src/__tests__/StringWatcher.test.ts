@@ -1,7 +1,7 @@
-import { MakeFileTypeWatcher } from '../FileTypeWatcher';
+import { MakeStringWatcher } from '../StringWatcher';
 
 it('File Type Watcher Ignore, then Watch testing', () => {
-  const ftw = MakeFileTypeWatcher();
+  const ftw = MakeStringWatcher();
   expect(ftw).toBeDefined();
   expect(ftw.watching('.txt')).toBe(true);
   expect(ftw.watching('.jpg')).toBe(true);
@@ -17,7 +17,7 @@ it('File Type Watcher Ignore, then Watch testing', () => {
 });
 
 it('File Type Watcher Watch, then Ignore testing', () => {
-  const ftw = MakeFileTypeWatcher();
+  const ftw = MakeStringWatcher();
   ftw.addToWatchList('.mp3');
   expect(ftw.watching('.txt')).toBe(false);
   expect(ftw.watching('.jpg')).toBe(false);
@@ -29,7 +29,7 @@ it('File Type Watcher Watch, then Ignore testing', () => {
 });
 
 it('File Type Watcher multiples testing', () => {
-  const ftw = MakeFileTypeWatcher();
+  const ftw = MakeStringWatcher();
   ftw.addToIgnoreList('.txt', '.jpg');
   expect(ftw.watching('.txt')).toBe(false);
   expect(ftw.watching('.jpg')).toBe(false);
@@ -44,7 +44,7 @@ it('File Type Watcher multiples testing', () => {
 });
 
 it('File Type Watcher Chaining Ignore then Watch', () => {
-  const ftw = MakeFileTypeWatcher()
+  const ftw = MakeStringWatcher()
     .addToIgnoreList(['.txt', '.jpg'])
     .addToWatchList(new Set(['.mp3', '.flac']));
   expect(ftw.watching('.txt')).toBe(false);
@@ -55,7 +55,7 @@ it('File Type Watcher Chaining Ignore then Watch', () => {
 });
 
 it('File Type Watcher Chaining Watch then Ignore', () => {
-  const ftw = MakeFileTypeWatcher()
+  const ftw = MakeStringWatcher()
     .addToWatchList('.mp3', ['.flac'])
     .addToIgnoreList(['.txt'], '.jpg');
   expect(ftw.watching('.txt')).toBe(false);

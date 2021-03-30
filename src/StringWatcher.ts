@@ -1,18 +1,27 @@
 import { Type } from '@freik/core-utils';
 
-export type FileTypeWatcher = {
+export type StringWatcher = {
   addToIgnoreList(
-    this: FileTypeWatcher,
+    this: StringWatcher,
     ...types: (string | Iterable<string>)[]
-  ): FileTypeWatcher;
+  ): StringWatcher;
   addToWatchList(
-    this: FileTypeWatcher,
+    this: StringWatcher,
     ...types: (string | Iterable<string>)[]
-  ): FileTypeWatcher;
+  ): StringWatcher;
   watching(type: string): boolean;
 };
 
-export function MakeFileTypeWatcher(): FileTypeWatcher {
+/**
+ * Returns a data structure designed to let you opt in, or opt out, of specific
+ * strings. Use `addToWatchList` to "opt in", and use `addToIgnoreList` to opt
+ * out. These two combine (and preempt eachother). If you only have an ignore
+ * list, `watching(str)` will return `true` for everything not on the list. If
+ * you only have a watch list, `watching(str)` will return `false` for
+ * everything not on the list.
+ * @returns StringWatcher
+ */
+export function MakeStringWatcher(): StringWatcher {
   const toWatch = new Set<string>();
   const toIgnore = new Set<string>();
   function shouldWatch(type: string): boolean {
@@ -22,9 +31,9 @@ export function MakeFileTypeWatcher(): FileTypeWatcher {
     return toIgnore.size !== 0 && toIgnore.has(type);
   }
   function addToWatchList(
-    this: FileTypeWatcher,
+    this: StringWatcher,
     ...types: (string | Iterable<string>)[]
-  ): FileTypeWatcher {
+  ): StringWatcher {
     for (const type of types) {
       for (const elem of Type.isString(type) ? [type] : type) {
         toWatch.add(elem);
@@ -34,9 +43,9 @@ export function MakeFileTypeWatcher(): FileTypeWatcher {
     return this;
   }
   function addToIgnoreList(
-    this: FileTypeWatcher,
+    this: StringWatcher,
     ...types: (string | Iterable<string>)[]
-  ): FileTypeWatcher {
+  ): StringWatcher {
     for (const type of types) {
       for (const elem of Type.isString(type) ? [type] : type) {
         toIgnore.add(elem);
