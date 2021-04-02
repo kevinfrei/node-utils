@@ -16,7 +16,7 @@ it('Make a little File Index', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest');
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest/');
   const files: string[] = [];
-  fi.forEachFile((pathName: string) => files.push(pathName));
+  fi.forEachFileSync((pathName: string) => files.push(pathName));
   expect(files.sort(pathCompare)).toEqual([
     'file1.txt',
     'file2.txt',
@@ -36,7 +36,7 @@ it('Make a little File Index with only .txt files', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest2', isTxt);
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest2/');
   const files: string[] = [];
-  fi.forEachFile((pathName: string) => files.push(pathName));
+  fi.forEachFileSync((pathName: string) => files.push(pathName));
   expect(files.sort(pathCompare)).toEqual(['file1.txt', 'file2.txt']);
 });
 
@@ -44,7 +44,7 @@ it('Make a little File Index without .txt files', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', notTxt);
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
-  fi.forEachFile((pathName: string) => files.push(pathName));
+  fi.forEachFileSync((pathName: string) => files.push(pathName));
   expect(files.sort(pathCompare)).toEqual(['file3.tmp', 'file4.dat']);
 });
 
@@ -52,7 +52,7 @@ it('Make a little File Index and see some file movement', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', notTxt);
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
-  fi.forEachFile((pathName: string) => files.push(pathName));
+  fi.forEachFileSync((pathName: string) => files.push(pathName));
   expect(files.sort(pathCompare)).toEqual(['file3.tmp', 'file4.dat']);
   const adds: string[] = [];
   const subs: string[] = [];
@@ -61,7 +61,7 @@ it('Make a little File Index and see some file movement', async () => {
       'src/__tests__/FileIndexTest3/file3.tmp',
       'src/__tests__/FileIndexTest3/file3.txt',
     );
-    await fi.rescanFiles(
+    await fi.rescanFilesSyncWatchers(
       (added: string) => adds.push(added),
       (subbed: string) => subs.push(subbed),
     );

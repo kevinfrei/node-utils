@@ -1,12 +1,12 @@
 import { Operations as Ops } from '@freik/core-utils';
-import { SortedArrayDiff, pathCompare } from '../FileIndex';
+import { SortedArrayDiffSync, pathCompare } from '../index';
 
 it('SortedArrayDiff', () => {
   const array1 = ['a', 'b', 'd', 'f'];
   const array2 = ['b', 'e', 'f'];
   const subs: string[] = [];
   const adds: string[] = [];
-  SortedArrayDiff(
+  SortedArrayDiffSync(
     array1,
     array2,
     (str: string) => adds.push(str),
@@ -21,7 +21,7 @@ it('SortedArrayDiff - case insensitive validation', () => {
   const array2 = ['a', 'b', 'd', 'F'];
   const subs: string[] = [];
   const adds: string[] = [];
-  SortedArrayDiff(
+  SortedArrayDiffSync(
     array1,
     array2,
     (str: string) => adds.push(str),
@@ -83,7 +83,7 @@ it('Random SortedArrayDiff testing', () => {
   expect(subCount).toEqual(actual_subs.size);
   const subs = new Set<string>();
   const adds = new Set<string>();
-  SortedArrayDiff(
+  SortedArrayDiffSync(
     array1,
     array2,
     (str: string) => adds.add(str),

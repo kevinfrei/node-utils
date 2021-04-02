@@ -1,19 +1,24 @@
 import { MakeError, Type } from '@freik/core-utils';
 import { ForFiles } from './forFiles';
-import { getExtNoDot } from './path';
 import path from 'path';
 import { arrayToTextFileAsync, textFileToArrayAsync } from './file';
 
 const err = MakeError('FileIndex-err');
 
-type PathHandler = (pathName: string) => void;
+type PathHandler = (pathName: string) => Promise<void>;
+type PathHandlerSync = (pathName: string) => void;
 
 export type FileIndex = {
   getLocation: () => string;
-  forEachFile: (fn: PathHandler) => void;
+  forEachFile: (fn: PathHandler) => Promise<void>;
+  forEachFileSync: (fn: PathHandlerSync) => void;
   getLastScanTime: () => Date | null;
   // When we rescan files, look at file path diffs
   rescanFiles: (addFile?: PathHandler, delFile?: PathHandler) => Promise<void>;
+  rescanFilesSyncWatchers: (
+    addFile: PathHandlerSync,
+    delFile?: PathHandlerSync,
+  ) => Promise<void>;
 };
 
 export function pathCompare(a: string | null, b: string | null): number {
@@ -26,11 +31,39 @@ export function pathCompare(a: string | null, b: string | null): number {
 }
 
 /* This requires that both arrays are already sorted */
-export function SortedArrayDiff(
+export async function SortedArrayDiff(
   oldList: string[],
   newList: string[],
   addFn?: PathHandler,
   delFn?: PathHandler,
+): Promise<void> {
+  let oldIndex = 0;
+  let newIndex = 0;
+  for (; oldIndex < oldList.length || newIndex < newList.length; ) {
+    const oldItem = oldIndex < oldList.length ? oldList[oldIndex] : null;
+    const newItem = newIndex < newList.length ? newList[newIndex] : null;
+    const comp = pathCompare(oldItem, newItem);
+    if (comp === 0) {
+      oldIndex++;
+      newIndex++;
+      continue;
+    } else if (comp < 0 && oldItem !== null) {
+      // old item goes "before" new item, so we've deleted old item
+      if (delFn) await delFn(oldItem);
+      oldIndex++;
+    } else if (comp > 0 && newItem !== null) {
+      // new item goes "before" old item, so we've added new item
+      if (addFn) await addFn(newItem);
+      newIndex++;
+    }
+  }
+}
+
+export function SortedArrayDiffSync(
+  oldList: string[],
+  newList: string[],
+  addFn?: PathHandlerSync,
+  delFn?: PathHandlerSync,
 ): void {
   let oldIndex = 0;
   let newIndex = 0;
@@ -173,8 +206,48 @@ export async function MakeFileIndex(
     // post-process any differences from the previous list
     if (delFileFn || addFileFn) {
       // Don't waste time if we don't have funcs to call...
-      SortedArrayDiff(oldFileList, fileList, addFileFn, delFileFn);
+      await SortedArrayDiff(oldFileList, fileList, addFileFn, delFileFn);
     }
+    // TODO: Save the new list back to disk in the .emp file index
+  }
+
+  async function rescanFilesSyncWatchers(
+    addFileFn: PathHandlerSync,
+    delFileFn?: PathHandlerSync,
+  ): Promise<void> {
+    const oldFileList = fileList;
+    const newFileList: string[] = [];
+    const newLastScanTime = new Date();
+    await ForFiles(
+      theLocation,
+      (filePath: string) => {
+        if (!filePath.startsWith(theLocation)) {
+          err(`File ${filePath} doesn't appear to be under ${theLocation}`);
+          return false;
+        }
+        const subPath = filePath
+          .substr(theLocation.length)
+          .replaceAll('\\', '/');
+        if (
+          !filePath.endsWith('/' + path.basename(indexFile)) &&
+          shouldWatchFile(filePath)
+        ) {
+          // the file path is relative to the root, and should always use /
+          newFileList.push(subPath);
+        }
+        return true;
+      },
+      {
+        recurse: true,
+        keepGoing: true,
+      },
+    );
+    fileList = newFileList.sort(pathCompare);
+    lastScanTime = newLastScanTime;
+    await saveFileIndex();
+    // Alright, we've got the new list, now call the handlers to
+    // post-process any differences from the previous list
+    SortedArrayDiffSync(oldFileList, fileList, addFileFn, delFileFn);
     // TODO: Save the new list back to disk in the .emp file index
   }
 
@@ -194,7 +267,13 @@ export async function MakeFileIndex(
     // Don't know if this is necessary, but it seems useful
     getLocation: () => theLocation,
     getLastScanTime: () => lastScanTime,
-    forEachFile: (fn: PathHandler) => fileList.forEach(fn),
+    forEachFileSync: (fn: PathHandlerSync) => fileList.forEach(fn),
+    forEachFile: async (fn: PathHandler): Promise<void> => {
+      for (const f of fileList) {
+        await fn(f);
+      }
+    },
     rescanFiles,
+    rescanFilesSyncWatchers,
   };
 }

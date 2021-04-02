@@ -3,10 +3,10 @@ export * as PathUtil from './path';
 export * as ProcUtil from './process';
 export * as OpenLocalBrowser from './OpenLocalBrowser';
 export * as AppConfig from './AppConfig';
-export { ForFiles, ForFilesSync } from './forFiles';
-export { Persist, MakePersistence } from './persist';
-export { StringWatcher, MakeStringWatcher } from './StringWatcher';
-export { FileIndex, MakeFileIndex, Watcher } from './FileIndex';
+export * from './forFiles';
+export * from './persist';
+export * from './StringWatcher';
+export * from './FileIndex';
 
 export type SpawnResult = {
   output: string[]; // Array of results from stdio output.
