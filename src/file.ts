@@ -1,6 +1,5 @@
+import ofs, { promises as fsp } from 'fs';
 import path from 'path';
-import ofs from 'fs';
-import { promises as fsp } from 'fs';
 import { spawnResAsync } from './process';
 
 const fs = {

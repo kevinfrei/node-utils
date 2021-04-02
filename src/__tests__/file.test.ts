@@ -1,7 +1,11 @@
+import { exec as execAsync } from 'child_process';
 import { promises as fsp } from 'fs';
-import { textFileToArrayAsync, arrayToTextFileAsync, hideFile } from '../file';
-const { promisify } = require('util');
-const exec = promisify(require('child_process').exec);
+import { promisify } from 'util';
+import { arrayToTextFileAsync, hideFile, textFileToArrayAsync } from '../file';
+
+const exec = promisify(execAsync);
+
+// const { promisify } = require('util');
 
 module.exports.getGitUser = async function getGitUser() {
   const name = await exec('git config --global user.name');

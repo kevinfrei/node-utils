@@ -1,5 +1,5 @@
-import child_proc from 'child_process';
 import { MakeLogger } from '@freik/core-utils';
+import child_proc from 'child_process';
 
 const log = MakeLogger('olb');
 

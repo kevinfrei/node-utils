@@ -1,5 +1,5 @@
 import { Operations as Ops } from '@freik/core-utils';
-import { SortedArrayDiffSync, pathCompare } from '../index';
+import { pathCompare, SortedArrayDiffSync } from '../index';
 
 it('SortedArrayDiff', () => {
   const array1 = ['a', 'b', 'd', 'f'];

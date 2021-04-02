@@ -1,6 +1,5 @@
-import { Operations as Ops } from '@freik/core-utils';
-import { pathCompare, MakeFileIndex } from '../FileIndex';
 import { promises as fsp } from 'fs';
+import { MakeFileIndex, pathCompare } from '../FileIndex';
 
 async function cleanup() {
   for (const i of ['', '2', '3']) {
@@ -61,7 +60,7 @@ it('Make a little File Index and see some file movement', async () => {
       'src/__tests__/FileIndexTest3/file3.tmp',
       'src/__tests__/FileIndexTest3/file3.txt',
     );
-    await fi.rescanFilesSyncWatchers(
+    await fi.rescanFiles(
       (added: string) => adds.push(added),
       (subbed: string) => subs.push(subbed),
     );

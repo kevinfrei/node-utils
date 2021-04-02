@@ -1,5 +1,5 @@
-import path from 'path';
 import os from 'os';
+import path from 'path';
 
 export function getTemp(name: string, ext?: string): string {
   const extension: string = ext && ext[0] !== '.' ? '.' + ext : ext ? ext : '';

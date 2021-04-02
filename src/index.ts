@@ -1,12 +1,12 @@
-export * as FileUtil from './file';
-export * as PathUtil from './path';
-export * as ProcUtil from './process';
-export * as OpenLocalBrowser from './OpenLocalBrowser';
 export * as AppConfig from './AppConfig';
-export * from './forFiles';
-export * from './persist';
-export * from './StringWatcher';
+export * as FileUtil from './file';
 export * from './FileIndex';
+export * from './forFiles';
+export * as OpenLocalBrowser from './OpenLocalBrowser';
+export * as PathUtil from './path';
+export * from './persist';
+export * as ProcUtil from './process';
+export * from './StringWatcher';
 
 export type SpawnResult = {
   output: string[]; // Array of results from stdio output.
