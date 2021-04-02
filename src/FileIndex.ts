@@ -1,23 +1,23 @@
 import { MakeError, Type } from '@freik/core-utils';
-import { ForFiles } from './forFiles';
 import path from 'path';
 import { arrayToTextFileAsync, textFileToArrayAsync } from './file';
+import { ForFiles } from './forFiles';
 
 const err = MakeError('FileIndex-err');
 
-type PathHandler = (pathName: string) => Promise<void>;
+type PathHandlerAsync = (pathName: string) => Promise<void>;
 type PathHandlerSync = (pathName: string) => void;
+type PathHandlerEither = PathHandlerSync | PathHandlerAsync;
 
 export type FileIndex = {
   getLocation: () => string;
-  forEachFile: (fn: PathHandler) => Promise<void>;
+  forEachFile: (fn: PathHandlerAsync) => Promise<void>;
   forEachFileSync: (fn: PathHandlerSync) => void;
   getLastScanTime: () => Date | null;
   // When we rescan files, look at file path diffs
-  rescanFiles: (addFile?: PathHandler, delFile?: PathHandler) => Promise<void>;
-  rescanFilesSyncWatchers: (
-    addFile: PathHandlerSync,
-    delFile?: PathHandlerSync,
+  rescanFiles: (
+    addFile?: PathHandlerEither,
+    delFile?: PathHandlerEither,
   ) => Promise<void>;
 };
 
@@ -34,8 +34,8 @@ export function pathCompare(a: string | null, b: string | null): number {
 export async function SortedArrayDiff(
   oldList: string[],
   newList: string[],
-  addFn?: PathHandler,
-  delFn?: PathHandler,
+  addFn?: PathHandlerEither,
+  delFn?: PathHandlerEither,
 ): Promise<void> {
   let oldIndex = 0;
   let newIndex = 0;
@@ -49,11 +49,21 @@ export async function SortedArrayDiff(
       continue;
     } else if (comp < 0 && oldItem !== null) {
       // old item goes "before" new item, so we've deleted old item
-      if (delFn) await delFn(oldItem);
+      if (delFn) {
+        const foo = delFn(oldItem);
+        if (Type.isPromise(foo)) {
+          await foo;
+        }
+      }
       oldIndex++;
     } else if (comp > 0 && newItem !== null) {
       // new item goes "before" old item, so we've added new item
-      if (addFn) await addFn(newItem);
+      if (addFn) {
+        const bar = addFn(newItem);
+        if (Type.isPromise(bar)) {
+          await bar;
+        }
+      }
       newIndex++;
     }
   }
@@ -169,8 +179,8 @@ export async function MakeFileIndex(
   // Rescan the location, calling a function for each add/delete of image
   // or audio files
   async function rescanFiles(
-    addFileFn?: PathHandler,
-    delFileFn?: PathHandler,
+    addFileFn?: PathHandlerEither,
+    delFileFn?: PathHandlerEither,
   ): Promise<void> {
     const oldFileList = fileList;
     const newFileList: string[] = [];
@@ -211,46 +221,6 @@ export async function MakeFileIndex(
     // TODO: Save the new list back to disk in the .emp file index
   }
 
-  async function rescanFilesSyncWatchers(
-    addFileFn: PathHandlerSync,
-    delFileFn?: PathHandlerSync,
-  ): Promise<void> {
-    const oldFileList = fileList;
-    const newFileList: string[] = [];
-    const newLastScanTime = new Date();
-    await ForFiles(
-      theLocation,
-      (filePath: string) => {
-        if (!filePath.startsWith(theLocation)) {
-          err(`File ${filePath} doesn't appear to be under ${theLocation}`);
-          return false;
-        }
-        const subPath = filePath
-          .substr(theLocation.length)
-          .replaceAll('\\', '/');
-        if (
-          !filePath.endsWith('/' + path.basename(indexFile)) &&
-          shouldWatchFile(filePath)
-        ) {
-          // the file path is relative to the root, and should always use /
-          newFileList.push(subPath);
-        }
-        return true;
-      },
-      {
-        recurse: true,
-        keepGoing: true,
-      },
-    );
-    fileList = newFileList.sort(pathCompare);
-    lastScanTime = newLastScanTime;
-    await saveFileIndex();
-    // Alright, we've got the new list, now call the handlers to
-    // post-process any differences from the previous list
-    SortedArrayDiffSync(oldFileList, fileList, addFileFn, delFileFn);
-    // TODO: Save the new list back to disk in the .emp file index
-  }
-
   /*
    *
    * Begin 'constructor' code here:
@@ -268,12 +238,11 @@ export async function MakeFileIndex(
     getLocation: () => theLocation,
     getLastScanTime: () => lastScanTime,
     forEachFileSync: (fn: PathHandlerSync) => fileList.forEach(fn),
-    forEachFile: async (fn: PathHandler): Promise<void> => {
+    forEachFile: async (fn: PathHandlerAsync): Promise<void> => {
       for (const f of fileList) {
         await fn(f);
       }
     },
     rescanFiles,
-    rescanFilesSyncWatchers,
   };
 }
