@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -35,7 +35,7 @@
     "chk": "yarn format && yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.14.2"
+    "@freik/core-utils": "^0.16.0"
   },
   "devDependencies": {
     "@freik/build-tools": "^2.4.1",
