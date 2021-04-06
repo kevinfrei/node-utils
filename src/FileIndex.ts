@@ -5,9 +5,10 @@ import { ForFiles } from './forFiles';
 
 const err = MakeError('FileIndex-err');
 
-type PathHandlerAsync = (pathName: string) => Promise<void>;
-type PathHandlerSync = (pathName: string) => void;
-type PathHandlerEither = PathHandlerSync | PathHandlerAsync;
+export type PathHandlerAsync = (pathName: string) => Promise<void>;
+export type PathHandlerSync = (pathName: string) => void;
+export type PathHandlerEither = PathHandlerSync | PathHandlerAsync;
+export type PathHandlerBoth = (pathName: string) => Promise<void> | void;
 
 export type FileIndex = {
   getLocation: () => string;
@@ -16,8 +17,8 @@ export type FileIndex = {
   getLastScanTime: () => Date | null;
   // When we rescan files, look at file path diffs
   rescanFiles: (
-    addFile?: PathHandlerEither,
-    delFile?: PathHandlerEither,
+    addFile?: PathHandlerBoth,
+    delFile?: PathHandlerBoth,
   ) => Promise<void>;
 };
 
@@ -34,8 +35,8 @@ export function pathCompare(a: string | null, b: string | null): number {
 export async function SortedArrayDiff(
   oldList: string[],
   newList: string[],
-  addFn?: PathHandlerEither,
-  delFn?: PathHandlerEither,
+  addFn?: PathHandlerBoth,
+  delFn?: PathHandlerBoth,
 ): Promise<void> {
   let oldIndex = 0;
   let newIndex = 0;
@@ -87,11 +88,15 @@ export function SortedArrayDiffSync(
       continue;
     } else if (comp < 0 && oldItem !== null) {
       // old item goes "before" new item, so we've deleted old item
-      if (delFn) delFn(oldItem);
+      if (delFn) {
+        delFn(oldItem);
+      }
       oldIndex++;
     } else if (comp > 0 && newItem !== null) {
       // new item goes "before" old item, so we've added new item
-      if (addFn) addFn(newItem);
+      if (addFn) {
+        addFn(newItem);
+      }
       newIndex++;
     }
   }
@@ -238,9 +243,12 @@ export async function MakeFileIndex(
     getLocation: () => theLocation,
     getLastScanTime: () => lastScanTime,
     forEachFileSync: (fn: PathHandlerSync) => fileList.forEach(fn),
-    forEachFile: async (fn: PathHandlerAsync): Promise<void> => {
+    forEachFile: async (fn: PathHandlerBoth): Promise<void> => {
       for (const f of fileList) {
-        await fn(f);
+        const res = fn(f);
+        if (Type.isPromise(res)) {
+          await res;
+        }
       }
     },
     rescanFiles,
