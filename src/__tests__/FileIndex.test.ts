@@ -1,5 +1,6 @@
 import { promises as fsp } from 'fs';
 import { MakeFileIndex, pathCompare } from '../FileIndex';
+import { MakeSuffixWatcher } from '../StringWatcher';
 
 async function cleanup() {
   for (const i of ['', '2', '3']) {
@@ -24,12 +25,8 @@ it('Make a little File Index', async () => {
   ]);
 });
 
-function isTxt(str: string) {
-  return str.endsWith('.txt');
-}
-function notTxt(str: string) {
-  return !isTxt(str);
-}
+const isTxt = MakeSuffixWatcher().addToWatchList('txt');
+const notTxt = MakeSuffixWatcher().addToIgnoreList('.txt');
 
 it('Make a little File Index with only .txt files', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest2', isTxt);
