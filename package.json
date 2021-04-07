@@ -32,7 +32,7 @@
     "version": "yarn run format && git add -A src",
     "postversion": "git push && git push --tags --no-verify",
     "compile": "tsc --noEmit",
-    "chk": "yarn format && yarn lint && yarn compile && yarn test"
+    "chk": "yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
     "@freik/core-utils": "^0.16.0"

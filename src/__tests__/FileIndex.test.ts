@@ -3,17 +3,16 @@ import { MakeFileIndex, pathCompare } from '../FileIndex';
 import { MakeSuffixWatcher } from '../StringWatcher';
 
 async function cleanup() {
-  for (const i of [
-    'FileIndexTest',
-    'FileIndexTest2',
-    'FileIndexTest3',
-    'SubdirTest',
-  ]) {
+  for (const i of ['FileIndexTest', 'FileIndexTest2', 'FileIndexTest3']) {
     try {
       await fsp.rm(`src/__tests__/${i}/.fileIndex.txt`);
     } catch (e) {}
   }
+  try {
+    await fsp.rm('src/__tests__/SubdirTest/.customFileIndex.txt');
+  } catch (e) {}
 }
+
 beforeEach(cleanup);
 afterEach(cleanup);
 
@@ -30,7 +29,7 @@ it('Make a little File Index', async () => {
   ]);
 });
 
-const isTxt = MakeSuffixWatcher().addToWatchList('txt');
+const isTxt = MakeSuffixWatcher('txt');
 const notTxt = MakeSuffixWatcher().addToIgnoreList('.txt');
 
 it('Make a little File Index with only .txt files', async () => {
@@ -77,6 +76,9 @@ it('Make a little File Index and see some file movement', async () => {
 });
 
 it('Subdirs!', async () => {
-  const fi = await MakeFileIndex('src/__tests__/SubdirTest');
+  const fi = await MakeFileIndex(
+    'src/__tests__/SubdirTest',
+    'src/__tests__/SubdirTest/.customFileIndex.txt',
+  );
   expect(fi).toBeDefined();
 });
