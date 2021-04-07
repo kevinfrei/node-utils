@@ -71,7 +71,7 @@ it('Make a little File Index and see some file movement', async () => {
   expect(subs).toEqual(['file3.tmp']);
 });
 
-it('Subdirs!', async() => {
+it('Subdirs!', async () => {
   const fi = await MakeFileIndex('src/__tests__/SubdirTest');
   expect(fi).toBeDefined();
 });
