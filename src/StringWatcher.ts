@@ -23,7 +23,7 @@ export type StringWatcher = {
  * everything not on the list.
  * @returns StringWatcher
  */
-export function MakeStringWatcher(): StringWatcher {
+export function MakeStringWatcher(...maybeWatchList: string[]): StringWatcher {
   const toWatch = new Set<string>();
   const toIgnore = new Set<string>();
   function shouldWatch(type: string): boolean {
@@ -62,6 +62,9 @@ export function MakeStringWatcher(): StringWatcher {
   watching.addToIgnoreList = addToIgnoreList;
   watching.addToWatchList = addToWatchList;
   watching.watching = watching;
+  if (maybeWatchList) {
+    watching.addToWatchList(maybeWatchList);
+  }
   return watching;
 }
 
@@ -74,7 +77,7 @@ export function MakeStringWatcher(): StringWatcher {
  * everything not on the list.
  * @returns StringWatcher
  */
-export function MakeSuffixWatcher(): StringWatcher {
+export function MakeSuffixWatcher(...maybeWatchList: string[]): StringWatcher {
   const toWatch = new Set<string>();
   const toIgnore = new Set<string>();
   function getExt(str: string): string {
@@ -122,5 +125,8 @@ export function MakeSuffixWatcher(): StringWatcher {
   watching.addToIgnoreList = addToIgnoreList;
   watching.addToWatchList = addToWatchList;
   watching.watching = watching;
+  if (maybeWatchList) {
+    watching.addToWatchList(maybeWatchList);
+  }
   return watching;
 }

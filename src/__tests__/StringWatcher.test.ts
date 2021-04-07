@@ -1,4 +1,4 @@
-import { MakeStringWatcher } from '../StringWatcher';
+import { MakeStringWatcher } from '../index';
 
 it('File Type Watcher Ignore, then Watch testing', () => {
   const ftw = MakeStringWatcher();
