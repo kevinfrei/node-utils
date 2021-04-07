@@ -3,9 +3,14 @@ import { MakeFileIndex, pathCompare } from '../FileIndex';
 import { MakeSuffixWatcher } from '../StringWatcher';
 
 async function cleanup() {
-  for (const i of ['', '2', '3']) {
+  for (const i of [
+    'FileIndexTest',
+    'FileIndexTest2',
+    'FileIndexTest3',
+    'SubdirTest',
+  ]) {
     try {
-      await fsp.rm('src/__tests__/FileIndexTest' + i + '/.fileIndex.txt');
+      await fsp.rm(`src/__tests__/${i}/.fileIndex.txt`);
     } catch (e) {}
   }
 }
