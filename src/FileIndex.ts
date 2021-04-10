@@ -22,6 +22,10 @@ export type FileIndex = {
   ) => Promise<void>;
 };
 
+export function xplatPath(a: string): string {
+  return a.replaceAll('\\', '/');
+}
+
 export function pathCompare(a: string | null, b: string | null): number {
   if (a === null) return b !== null ? 1 : 0;
   if (b === null) return a !== null ? -1 : 0;
@@ -121,7 +125,7 @@ function getIndexLocation(
   if (obj !== undefined && !Type.isFunction(obj) && Type.isString(obj)) {
     return obj;
   } else {
-    return path.join(defaultLoc, '.fileIndex.txt');
+    return xplatPath(path.join(defaultLoc, '.fileIndex.txt'));
   }
 }
 
@@ -154,12 +158,7 @@ export async function MakeFileIndex(
   // non-const: these things update "atomically" so the whole array gets changed
   let fileList: string[] = [];
   let lastScanTime: Date | null = null;
-  const theLocation =
-    location +
-    (location[location.length - 1] === '/' ||
-    location[location.length - 1] === '\\'
-      ? ''
-      : '/');
+  const theLocation = xplatPath(location) + (location.endsWith('/') ? '' : '/');
   // Read the file list from disk, either from the MDF cache,
   // or directly from the path provided
   async function loadFileIndex(): Promise<boolean> {
@@ -192,14 +191,13 @@ export async function MakeFileIndex(
     const newLastScanTime = new Date();
     await ForFiles(
       theLocation,
-      (filePath: string) => {
+      (platPath: string) => {
+        const filePath = xplatPath(platPath);
         if (!filePath.startsWith(theLocation)) {
           err(`File ${filePath} doesn't appear to be under ${theLocation}`);
           return false;
         }
-        const subPath = filePath
-          .substr(theLocation.length)
-          .replaceAll('\\', '/');
+        const subPath = xplatPath(filePath.substr(theLocation.length));
         if (
           !filePath.endsWith('/' + path.basename(indexFile)) &&
           shouldWatchFile(filePath)
