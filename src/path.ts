@@ -19,3 +19,12 @@ export function changeExt(fileName: string, newExt: string): string {
   }
   return fileName.substr(0, fileName.length - ext.length) + newExt;
 }
+
+// Make sure the path has a final slash on it
+export function trailingSlash(pathName: string): string {
+  if (pathName.endsWith('/')) {
+    return pathName;
+  } else {
+    return pathName + '/';
+  }
+}
