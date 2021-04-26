@@ -1,4 +1,4 @@
-import { FTON, FTONData } from '@freik/core-utils';
+import { Pickle, Unpickle } from '@freik/core-utils';
 import ofs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -14,43 +14,40 @@ export function GetFilePath(name: string): string {
   return path.join(os.homedir(), '.config', `${name}.json`);
 }
 
-export function Get(name: string): FTONData | void {
+export function Get(name: string): unknown | void {
   const configFile = GetFilePath(name);
   try {
     const contents: string = fs.readFileSync(configFile, 'utf8');
-    return FTON.parse(contents);
+    return Unpickle(contents);
   } catch (e) {
     return;
   }
 }
 
-export async function GetAsync(name: string): Promise<FTONData | void> {
+export async function GetAsync(name: string): Promise<unknown | void> {
   const configFile = GetFilePath(name);
   try {
     const contents: string = await fs.readFileAsync(configFile, 'utf8');
-    return FTON.parse(contents);
+    return Unpickle(contents);
   } catch (e) {
     return;
   }
 }
 
-export function Save(name: string, data: FTONData): boolean {
+export function Save(name: string, data: unknown): boolean {
   const configFile = GetFilePath(name);
   try {
-    fs.writeFileSync(configFile, JSON.stringify(data), 'utf8');
+    fs.writeFileSync(configFile, Pickle(data), 'utf8');
     return true;
   } catch (e) {
     return false;
   }
 }
 
-export async function SaveAsync(
-  name: string,
-  data: FTONData,
-): Promise<boolean> {
+export async function SaveAsync(name: string, data: unknown): Promise<boolean> {
   const configFile = GetFilePath(name);
   try {
-    await fs.writeFileAsync(configFile, JSON.stringify(data), 'utf8');
+    await fs.writeFileAsync(configFile, Pickle(data), 'utf8');
     return true;
   } catch (e) {
     return false;
