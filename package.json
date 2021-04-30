@@ -35,7 +35,7 @@
     "chk": "yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.20.0"
+    "@freik/core-utils": "^0.22.0"
   },
   "devDependencies": {
     "@freik/build-tools": "^2.6.0",
