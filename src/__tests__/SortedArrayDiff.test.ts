@@ -49,9 +49,11 @@ function GenerateRandomArray(): string[] {
   );
 }
 
-function AddAndRemoveSomeStuff(
-  arr: string[],
-): { addCount: number; subCount: number; val: string[] } {
+function AddAndRemoveSomeStuff(arr: string[]): {
+  addCount: number;
+  subCount: number;
+  val: string[];
+} {
   const val: string[] = [];
   let subCount = 0;
   let addCount = 0;
