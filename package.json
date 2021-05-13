@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -35,13 +35,13 @@
     "chk": "yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.23.0"
+    "@freik/core-utils": "^0.23.2"
   },
   "devDependencies": {
-    "@freik/build-tools": "^2.6.0",
+    "@freik/build-tools": "^2.7.2",
     "@freik/ts-tooling": "^0.1.0",
     "@types/jest": "^26.0.23",
-    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
     "eslint": "^7.26.0",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
