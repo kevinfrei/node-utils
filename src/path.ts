@@ -22,9 +22,9 @@ export function changeExt(fileName: string, newExt: string): string {
 
 // Make sure the path has a final slash on it
 export function trailingSlash(pathName: string): string {
-  if (pathName.endsWith('/')) {
+  if (pathName.endsWith(path.sep)) {
     return pathName;
   } else {
-    return pathName + '/';
+    return pathName + path.sep;
   }
 }
