@@ -20,11 +20,34 @@ export function changeExt(fileName: string, newExt: string): string {
   return fileName.substr(0, fileName.length - ext.length) + newExt;
 }
 
+// Backslashes are annoying
+export function xplat(pathName: string): string {
+  return pathName.replaceAll('\\', '/');
+}
+
 // Make sure the path has a final slash on it
 export function trailingSlash(pathName: string): string {
-  if (pathName.endsWith(path.sep)) {
-    return pathName;
+  if (pathName.endsWith(path.sep) || pathName.endsWith('/')) {
+    return xplat(pathName);
   } else {
-    return pathName + path.sep;
+    return xplat(pathName + path.sep);
   }
 }
+
+// xplat helpers
+export function resolve(pathName: string): string {
+  return xplat(path.resolve(pathName));
+}
+
+export function join(...pathNames: string[]): string {
+  return xplat(path.join(...pathNames));
+}
+
+export function dirname(pathname: string): string {
+  return xplat(path.dirname(pathname));
+}
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+export const basename = path.basename;
+// eslint-disable-next-line @typescript-eslint/unbound-method
+export const extname = path.extname;

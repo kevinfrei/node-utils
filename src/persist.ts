@@ -1,6 +1,6 @@
 import { MakeError, MakeLogger, SeqNum } from '@freik/core-utils';
 import fs, { promises as fsp } from 'fs';
-import path from 'path';
+import * as path from './path';
 
 const log = MakeLogger('persist');
 const err = MakeError('persist-err', false);
@@ -26,7 +26,7 @@ export function MakePersistence(location: string): Persist {
 
   // Here's a place for app settings & stuff...
   function getLocation(): string {
-    return location;
+    return path.xplat(location);
   }
   function storageLocation(id: string): string {
     return path.join(getLocation(), `${id}.json`);

@@ -1,6 +1,6 @@
 import { MakeError, Type } from '@freik/core-utils';
 import * as fs from 'fs';
-import * as path from 'path';
+import * as path from './path';
 
 const fsp = fs.promises;
 
