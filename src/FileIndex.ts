@@ -9,16 +9,17 @@ export type PathHandlerAsync = (pathName: string) => Promise<void>;
 export type PathHandlerSync = (pathName: string) => void;
 export type PathHandlerEither = PathHandlerSync | PathHandlerAsync;
 export type PathHandlerBoth = (pathName: string) => Promise<void> | void;
+export type PathHandlerAll = PathHandlerBoth | PathHandlerEither;
 
 export type FileIndex = {
   getLocation: () => string;
-  forEachFile: (fn: PathHandlerEither | PathHandlerBoth) => Promise<void>;
+  forEachFile: (fn: PathHandlerAll) => Promise<void>;
   forEachFileSync: (fn: PathHandlerSync) => void;
   getLastScanTime: () => Date | null;
   // When we rescan files, look at file path diffs
   rescanFiles: (
-    addFile?: PathHandlerBoth | PathHandlerEither,
-    delFile?: PathHandlerBoth | PathHandlerEither,
+    addFile?: PathHandlerAll,
+    delFile?: PathHandlerAll,
   ) => Promise<void>;
 };
 
@@ -35,8 +36,8 @@ export function pathCompare(a: string | null, b: string | null): number {
 export async function SortedArrayDiff(
   oldList: string[],
   newList: string[],
-  addFn?: PathHandlerBoth | PathHandlerEither,
-  delFn?: PathHandlerBoth | PathHandlerEither,
+  addFn?: PathHandlerAll,
+  delFn?: PathHandlerAll,
 ): Promise<void> {
   let oldIndex = 0;
   let newIndex = 0;
@@ -180,8 +181,8 @@ export async function MakeFileIndex(
   // Rescan the location, calling a function for each add/delete of image
   // or audio files
   async function rescanFiles(
-    addFileFn?: PathHandlerEither | PathHandlerBoth,
-    delFileFn?: PathHandlerEither | PathHandlerBoth,
+    addFileFn?: PathHandlerAll,
+    delFileFn?: PathHandlerAll,
   ): Promise<void> {
     const oldFileList = fileList;
     const newFileList: string[] = [];
@@ -238,9 +239,7 @@ export async function MakeFileIndex(
     getLocation: () => theLocation,
     getLastScanTime: () => lastScanTime,
     forEachFileSync: (fn: PathHandlerSync) => fileList.forEach(fn),
-    forEachFile: async (
-      fn: PathHandlerBoth | PathHandlerEither,
-    ): Promise<void> => {
+    forEachFile: async (fn: PathHandlerAll): Promise<void> => {
       for (const f of fileList) {
         const res = fn(f);
         if (Type.isPromise(res)) {
