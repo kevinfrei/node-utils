@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.15.1",
+  "version": "0.16.0",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
