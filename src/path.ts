@@ -1,5 +1,10 @@
 import os from 'os';
+import child from 'child_process';
 import path from 'path';
+import { promises as fsp } from 'fs';
+import { promisify } from 'util';
+
+const exec = promisify(child.exec);
 
 export function getTemp(name: string, ext?: string): string {
   const extension: string = ext && ext[0] !== '.' ? '.' + ext : ext ? ext : '';
@@ -45,6 +50,25 @@ export function join(...pathNames: string[]): string {
 
 export function dirname(pathname: string): string {
   return xplat(path.dirname(pathname));
+}
+
+export async function getRoots(): Promise<string[]> {
+  if (os.platform() === 'win32') {
+    const { stdout, stderr } = await exec('wmic logicaldisk get name');
+    if (stderr.length > 0) {
+      return [];
+    }
+    return stdout
+      .split('\r\r\n')
+      .filter((value) => /[A-Za-z]:/.test(value))
+      .map((value) => value.trim());
+  } else if (os.platform() === 'darwin') {
+    const subdirs = await fsp.readdir('/Volumes');
+    return subdirs.map((v) => path.join('/Volumes', v));
+  } else {
+    // TODO: Linux support
+    return ['linux NYI'];
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/unbound-method

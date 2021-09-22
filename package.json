@@ -22,17 +22,17 @@
     "test": "jest --config jestconfig.json",
     "watch": "jest --config jestconfig.json --watch",
     "build": "rimraf lib && tsc",
-    "prepare": "pnpm build && minify -i lib",
+    "prepare": "yarn build && minify -i lib",
     "postinstall": "husky install",
-    "prepublishOnly": "pnpm test && pnpm  lint && pinst --disable",
+    "prepublishOnly": "yarn test && yarn  lint && pinst --disable",
     "postpublish": "pinst --enable",
     "format": "prettier --write \"src/**/*.ts\" \"*.md\" \"*.json\"",
     "lint": "eslint --fix --ext .ts src",
-    "preversion": "pnpm  lint",
-    "version": "pnpm  format && git add -A src",
+    "preversion": "yarn  lint",
+    "version": "yarn  format && git add -A src",
     "postversion": "git push && git push --tags --no-verify",
     "compile": "tsc --noEmit",
-    "chk": "pnpm lint && pnpm compile && pnpm test"
+    "chk": "yarn lint && yarn compile && yarn test"
   },
   "dependencies": {
     "@freik/core-utils": "^0.27.3"
@@ -40,10 +40,10 @@
   "devDependencies": {
     "@freik/build-tools": "^2.7.2",
     "@freik/ts-tooling": "^0.1.0",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.0.2",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
     "eslint": "^7.28.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.2",
     "jest": "^27.0.4",
     "pinst": "^2.1.6",
     "prettier": "^2.3.1",
