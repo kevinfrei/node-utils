@@ -1401,9 +1401,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@freik/build-tools@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@freik/build-tools@npm:3.1.2"
+"@freik/build-tools@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "@freik/build-tools@npm:3.1.4"
   dependencies:
     "@babel/cli": ^7.15.7
     "@babel/core": ^7.15.8
@@ -1440,9 +1440,14 @@ __metadata:
     react: ^17.0.1
     react-scripts: ^4.0.3
     typescript: ^4.2.2
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-scripts:
+      optional: true
   bin:
     er: lib/tools.js
-  checksum: b6eb383775904145071f5f2a432d6e9452766c61c516d04bdc8aa0833ce2430a7f1f141f511e8073f9d2df1d2d9304e701ef93cd1bccb654ba72b1bfe1809b09
+  checksum: 9f0661733aeafd20b50e623cdf84fbcfda3858c57c17b05a7ad7e50c8f28b4f6cff0cbd1c5ee17e64648cdde28020b15b97c4503caf22a329de2a415fdd99e9a
   languageName: node
   linkType: hard
 
@@ -1457,7 +1462,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@freik/node-utils@workspace:."
   dependencies:
-    "@freik/build-tools": ^3.1.2
+    "@freik/build-tools": ^3.1.4
     "@freik/core-utils": ^0.30.0
     "@types/jest": ^27.0.2
     "@typescript-eslint/eslint-plugin": ^5.0.0
