@@ -67,6 +67,7 @@ typings/
 
 # files for NPM
 /lib
+/dist
 
 # Yarn Integrity file
 .yarn-integrity

@@ -1,6 +1,6 @@
 import { MakeError, MakeLogger, SeqNum } from '@freik/core-utils';
 import fs, { promises as fsp } from 'fs';
-import * as path from './path';
+import * as path from './path.js';
 
 const log = MakeLogger('persist');
 const err = MakeError('persist-err', false);
