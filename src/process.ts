@@ -18,12 +18,18 @@ export async function spawnAsync(
       status: null,
     };
     const child = args
-      ? cp.spawn(command, args, options as any)
-      : cp.spawn(command, options as any);
+      ? cp.spawn(command, args, options as cp.SpawnSyncOptions)
+      : cp.spawn(command, options as cp.SpawnSyncOptions);
+    if (!child.stdout) {
+      return { error: 'no stdout' };
+    }
     child.stdout.on('data', (data: Buffer | string) => {
       // 'close', 'end'
       sr.stdout = sr.stdout.toString() + data.toString();
     });
+    if (!child.stderr) {
+      return { error: 'no stdout' };
+    }
     child.stderr.on('data', (data: Buffer | string) => {
       // 'close', 'end'
       sr.stderr = sr.stderr.toString() + data.toString();
