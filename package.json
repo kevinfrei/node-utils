@@ -4,7 +4,6 @@
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
-  "private": false,
   "bugs": {
     "url": "https://github.com/kevinfrei/node-utils/issues"
   },
@@ -46,7 +45,7 @@
     "husky": "^7.0.2",
     "jest": "^27.3.0",
     "pinst": "^2.1.6",
-    "prettier": "^2.3.1",
+    "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.7",
     "typescript": "^4.4.4"
