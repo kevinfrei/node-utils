@@ -9,7 +9,7 @@ export function MakeKey(text: string): Key {
     .update(text + '-key-' + text)
     .digest();
   const data = crypto
-    .createHash('sha265')
+    .createHash('sha256')
     .update('iv-' + text + '-iv')
     .digest();
   const vals = new Array(16).fill(0);
