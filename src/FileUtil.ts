@@ -1,6 +1,6 @@
 import ofs, { promises as fsp } from 'fs';
 import path from 'path';
-import { spawnResAsync } from './process.js';
+import { spawnResAsync } from './ProcUtil.js';
 
 const fs = {
   readFileAsync: ofs.promises.readFile,

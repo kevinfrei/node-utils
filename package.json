@@ -1,62 +1,62 @@
 {
-  "name": "@freik/node-utils",
-  "version": "0.18.0",
-  "description": "My personal set of utilities for NodeJS",
-  "author": "Kevin Frei (kevinfrei@hotmail.com)",
-  "license": "Unlicense",
-  "bugs": {
-    "url": "https://github.com/kevinfrei/node-utils/issues"
-  },
-  "homepage": "https://github.com/kevinfrei/node-utils#readme",
-  "keywords": [
-    "node-utils"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kevinfrei/node-utils.git"
-  },
-  "module": "./lib/esm/index.js",
-  "main": "./lib/cjs/index.js",
-  "types": "./lib/esm/index.d.ts",
-  "scripts": {
-    "test": "jest --config jestconfig.json",
-    "watch": "jest --config jestconfig.json --watch",
-    "clean": "rimraf lib && rimraf \".*.tsbuildinfo\"",
-    "build": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.esm.json",
-    "cleanbuild": "yarn clean && yarn build",
-    "dbg": "yarn clean && tsc --sourceMap true --project tsconfig.cjs.json && tsc --sourceMap true --project tsconfig.esm.json",
-    "prepare": "yarn build",
-    "_postinstall": "husky install",
-    "prepublishOnly": "yarn test && yarn  lint && pinst --disable",
-    "postpublish": "pinst --enable",
-    "format": "prettier --write \"src/**/*.ts\" \"*.md\" \"*.json\"",
-    "lint": "eslint --fix --ext .ts src",
-    "preversion": "yarn  lint",
-    "version": "yarn  format && git add -A src",
-    "postversion": "git push && git push --tags --no-verify",
-    "compile": "tsc --noEmit --project tsconfig.esm.json && tsc --noEmit --project tsconfig.cjs.json",
-    "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
-  },
-  "dependencies": {
-    "@freik/core-utils": "^0.31.0"
-  },
-  "devDependencies": {
-    "@freik/build-tools": "^3.1.4",
-    "@types/jest": "^27.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "eslint": "^7.32.0",
-    "husky": "^7.0.2",
-    "jest": "^27.3.1",
-    "pinst": "^2.1.6",
-    "prettier": "^2.4.1",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "engines": {
-    "node": "^14.13.1 || >= 16.0.0"
-  }
+    "name": "@freik/node-utils",
+    "version": "0.19.0",
+    "description": "My personal set of utilities for NodeJS",
+    "author": "Kevin Frei (kevinfrei@hotmail.com)",
+    "license": "Unlicense",
+    "bugs": {
+        "url": "https://github.com/kevinfrei/node-utils/issues"
+    },
+    "homepage": "https://github.com/kevinfrei/node-utils#readme",
+    "keywords": [
+        "node-utils"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kevinfrei/node-utils.git"
+    },
+    "module": "./lib/esm/index.js",
+    "main": "./lib/cjs/index.js",
+    "types": "./lib/esm/index.d.ts",
+    "scripts": {
+        "test": "jest --config jestconfig.json",
+        "watch": "jest --config jestconfig.json --watch",
+        "clean": "rimraf lib && rimraf \".*.tsbuildinfo\"",
+        "build": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.esm.json",
+        "cleanbuild": "yarn clean && yarn build",
+        "dbg": "yarn clean && tsc --sourceMap true --project tsconfig.cjs.json && tsc --sourceMap true --project tsconfig.esm.json",
+        "prepare": "yarn build",
+        "postinstall": "husky install",
+        "prepublishOnly": "yarn test && yarn  lint && pinst --disable",
+        "postpublish": "pinst --enable",
+        "format": "prettier --write \"src/**/*.ts\" \"*.md\" \"*.json\"",
+        "lint": "eslint --fix --ext .ts src",
+        "preversion": "yarn  lint",
+        "version": "yarn  format && git add -A src",
+        "postversion": "git push && git push --tags --no-verify",
+        "compile": "tsc --noEmit --project tsconfig.esm.json && tsc --noEmit --project tsconfig.cjs.json",
+        "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
+    },
+    "dependencies": {
+        "@freik/core-utils": "^0.31.0"
+    },
+    "devDependencies": {
+        "@freik/build-tools": "^3.1.4",
+        "@types/jest": "^27.0.2",
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "eslint": "^7.32.0",
+        "husky": "^7.0.2",
+        "jest": "^27.3.1",
+        "pinst": "^2.1.6",
+        "prettier": "^2.4.1",
+        "rimraf": "^3.0.2",
+        "ts-jest": "^27.0.7",
+        "typescript": "^4.4.4"
+    },
+    "files": [
+        "lib/**/*"
+    ],
+    "engines": {
+        "node": "^14.13.1 || >= 16.0.0"
+    }
 }

@@ -1,7 +1,7 @@
 import { MakeError, Type } from '@freik/core-utils';
-import { arrayToTextFileAsync, textFileToArrayAsync } from './file.js';
+import { arrayToTextFileAsync, textFileToArrayAsync } from './FileUtil.js';
 import { ForFiles } from './forFiles.js';
-import * as path from './path.js';
+import * as path from './PathUtil.js';
 
 const err = MakeError('FileIndex-err');
 
