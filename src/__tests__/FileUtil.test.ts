@@ -1,7 +1,11 @@
 import { exec as execAsync } from 'child_process';
 import { promises as fsp } from 'fs';
 import { promisify } from 'util';
-import { arrayToTextFileAsync, hideFile, textFileToArrayAsync } from '../file';
+import {
+  arrayToTextFileAsync,
+  hideFile,
+  textFileToArrayAsync,
+} from '../FileUtil';
 
 const exec = promisify(execAsync);
 
