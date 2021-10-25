@@ -41,11 +41,12 @@
     "@freik/core-utils": "^0.31.0"
   },
   "devDependencies": {
-    "@freik/build-tools": "^3.1.4",
+    "@freik/build-tools": "^3.1.6",
     "@types/jest": "^27.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
     "eslint": "^7.32.0",
-    "husky": "^7.0.2",
+    "husky": "^7.0.4",
     "jest": "^27.3.1",
     "pinst": "^2.1.6",
     "prettier": "^2.4.1",
