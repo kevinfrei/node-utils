@@ -38,14 +38,15 @@
     "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.31.0"
+    "@freik/core-utils": "^0.32.0"
   },
   "devDependencies": {
     "@freik/build-tools": "^3.1.6",
     "@types/jest": "^27.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.1.0",
-    "@typescript-eslint/parser": "^5.1.0",
-    "eslint": "^7.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
     "jest": "^27.3.1",
     "pinst": "^2.1.6",
