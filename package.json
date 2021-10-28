@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.17.1",
+  "version": "0.20.1",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -41,6 +41,7 @@
     "@freik/core-utils": "^0.32.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^1.0.3",
     "@freik/build-tools": "^3.1.6",
     "@types/jest": "^27.0.2",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
