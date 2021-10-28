@@ -1,4 +1,10 @@
-import { MakeError, MakeLogger, SeqNum } from '@freik/core-utils';
+import {
+  MakeError,
+  MakeLogger,
+  MakeReaderWriter,
+  ReaderWriter,
+  SeqNum,
+} from '@freik/core-utils';
 import fs, { promises as fsp } from 'fs';
 import * as path from './PathUtil.js';
 
@@ -23,6 +29,19 @@ export function MakePersistence(location: string): Persist {
   const memoryCache = new Map<string, string>();
   const listeners = new Map<string, Map<string, ValueUpdateListener>>();
   const getNextListenerId = SeqNum();
+
+  const lockers = new Map<string, ReaderWriter>();
+
+  function getLock(id: string): ReaderWriter {
+    const locker = lockers.get(id);
+    if (locker !== undefined) {
+      return locker;
+    } else {
+      const res = MakeReaderWriter(1);
+      lockers.set(id, res);
+      return res;
+    }
+  }
 
   // Here's a place for app settings & stuff...
   function getLocation(): string {
@@ -55,6 +74,8 @@ export function MakePersistence(location: string): Persist {
       log('returning cached data for ' + id);
       return data;
     }
+    const lock = getLock(id);
+    await lock.read();
     try {
       const contents = await fsp.readFile(storageLocation(id), 'utf8');
       memoryCache.set(id, contents);
@@ -62,6 +83,8 @@ export function MakePersistence(location: string): Persist {
     } catch (e) {
       err('Error occurred during readFileAsync');
       err(e);
+    } finally {
+      lock.leaveRead();
     }
   }
 
@@ -81,8 +104,14 @@ export function MakePersistence(location: string): Persist {
     } catch (e) {
       /* */
     }
-    await fsp.writeFile(storageLocation(id), val, 'utf8');
-    memoryCache.set(id, val);
+    const lock = getLock(id);
+    await lock.write();
+    try {
+      await fsp.writeFile(storageLocation(id), val, 'utf8');
+      memoryCache.set(id, val);
+    } finally {
+      lock.leaveWrite();
+    }
   }
 
   function deleteFile(id: string) {
@@ -96,12 +125,16 @@ export function MakePersistence(location: string): Persist {
   }
 
   async function deleteFileAsync(id: string) {
+    const lock = getLock(id);
+    await lock.write();
     try {
       await fsp.unlink(storageLocation(id));
       memoryCache.delete(id);
     } catch (e) {
       err('Error occurred during deleteFileAsync');
       err(e);
+    } finally {
+      lock.leaveWrite();
     }
   }
 
