@@ -37,7 +37,7 @@ export function MakePersistence(location: string): Persist {
     if (locker !== undefined) {
       return locker;
     } else {
-      const res = MakeReaderWriter(1);
+      const res = MakeReaderWriter(0);
       lockers.set(id, res);
       return res;
     }
