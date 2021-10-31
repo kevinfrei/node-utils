@@ -2,11 +2,13 @@ import {
   MakeError,
   MakeLogger,
   MakeReaderWriter,
+  OnlyOneWaiting,
   ReaderWriter,
   SeqNum,
+  SyncFunc,
 } from '@freik/core-utils';
 import fs, { promises as fsp } from 'fs';
-import * as path from './PathUtil.js';
+import * as PathUtil from './PathUtil.js';
 
 const log = MakeLogger('persist');
 const err = MakeError('persist-err', false);
@@ -45,10 +47,10 @@ export function MakePersistence(location: string): Persist {
 
   // Here's a place for app settings & stuff...
   function getLocation(): string {
-    return path.xplat(location);
+    return PathUtil.xplat(location);
   }
   function storageLocation(id: string): string {
-    return path.join(getLocation(), `${id}.json`);
+    return PathUtil.join(getLocation(), `${id}.json`);
   }
 
   log(`User data location: ${storageLocation('test')}`);
@@ -89,14 +91,17 @@ export function MakePersistence(location: string): Persist {
   }
 
   function writeFile(id: string, val: string): void {
+    memoryCache.set(id, val);
+
     try {
       fs.mkdirSync(getLocation(), { recursive: true });
     } catch (e) {
       /* */
     }
     fs.writeFileSync(storageLocation(id), val, 'utf8');
-    memoryCache.set(id, val);
   }
+
+  const writers = new Map<string, SyncFunc<boolean>>();
 
   async function writeFileAsync(id: string, val: string): Promise<void> {
     try {
@@ -106,9 +111,25 @@ export function MakePersistence(location: string): Persist {
     }
     const lock = getLock(id);
     await lock.write();
+    memoryCache.set(id, val);
     try {
-      await fsp.writeFile(storageLocation(id), val, 'utf8');
-      memoryCache.set(id, val);
+      if (!writers.has(id)) {
+        writers.set(
+          id,
+          OnlyOneWaiting(async () => {
+            // If we've deleted the id, don't re-save
+            const recentVal = memoryCache.get(id);
+            if (recentVal !== undefined) {
+              // We might have deleted the value since the last save, I suppose
+              await fsp.writeFile(storageLocation(id), recentVal, 'utf8');
+            }
+          }, 500),
+        );
+      }
+      const func = writers.get(id);
+      if (!func)
+        throw Error('Horrific synchronization bug in persist.writeFileAsync');
+      await func();
     } finally {
       lock.leaveWrite();
     }
@@ -124,12 +145,13 @@ export function MakePersistence(location: string): Persist {
     }
   }
 
+  // FIXME: This is a nasty bug waiting to happen, when coupled with writeFileAsync :/
   async function deleteFileAsync(id: string) {
     const lock = getLock(id);
     await lock.write();
     try {
-      await fsp.unlink(storageLocation(id));
       memoryCache.delete(id);
+      await fsp.unlink(storageLocation(id));
     } catch (e) {
       err('Error occurred during deleteFileAsync');
       err(e);
