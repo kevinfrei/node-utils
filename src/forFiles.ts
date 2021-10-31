@@ -1,4 +1,4 @@
-import { MakeError, Type } from '@freik/core-utils';
+import { MakeError, MakeQueue, MakeStack, Type } from '@freik/core-utils';
 import * as fs from 'fs';
 import * as path from './PathUtil.js';
 
@@ -13,6 +13,7 @@ export async function ForFiles(
     recurse?: boolean;
     keepGoing?: boolean;
     fileTypes?: string[] | string;
+    order?: 'breadth' | 'depth';
   },
 ): Promise<boolean> {
   // Helper function to match the file types
@@ -35,10 +36,14 @@ export async function ForFiles(
       }
     : (): boolean => true;
 
-  const queue: string[] = Type.isString(seed) ? [seed] : seed;
+  const theSeed = Type.isString(seed) ? [seed] : seed;
+  const worklist =
+    opts && opts.order === 'depth'
+      ? MakeStack<string>(...theSeed)
+      : MakeQueue<string>(...theSeed);
   let overallResult = true;
-  while (queue.length > 0) {
-    const i = queue.pop();
+  while (!worklist.empty()) {
+    const i = worklist.pop();
     if (!i) {
       continue;
     }
@@ -72,14 +77,14 @@ export async function ForFiles(
             const ap = await fsp.realpath(path.join(i, dirent.name));
             const lst = await fsp.stat(ap);
             if (lst.isDirectory() && recurse) {
-              queue.push(ap);
+              worklist.push(ap);
             } else if (lst.isFile()) {
-              queue.push(ap);
+              worklist.push(ap);
             }
           } else if (dirent.isDirectory() && recurse) {
-            queue.push(path.join(i, dirent.name));
+            worklist.push(path.join(i, dirent.name));
           } else if (dirent.isFile()) {
-            queue.push(path.join(i, dirent.name));
+            worklist.push(path.join(i, dirent.name));
           }
         } catch (e) {
           err('Unable to process dirent:');
@@ -95,7 +100,12 @@ export async function ForFiles(
 export function ForFilesSync(
   seed: string | string[],
   func: (fileName: string) => boolean,
-  opts?: { recurse?: boolean; keepGoing?: boolean; fileTypes?: string[] },
+  opts?: {
+    recurse?: boolean;
+    keepGoing?: boolean;
+    fileTypes?: string[];
+    order?: 'depth' | 'breadth';
+  },
 ): boolean {
   const recurse = opts && opts.recurse;
   const keepGoing = opts && opts.keepGoing;
@@ -115,10 +125,14 @@ export function ForFilesSync(
         return false;
       }
     : (): boolean => true;
-  const queue: string[] = Type.isString(seed) ? [seed] : seed;
+  const theSeed: string[] = Type.isString(seed) ? [seed] : seed;
+  const worklist =
+    opts && opts.order === 'depth'
+      ? MakeStack<string>(...theSeed)
+      : MakeQueue<string>(...theSeed);
   let overallResult = true;
-  while (queue.length > 0) {
-    const i = queue.pop();
+  while (!worklist.empty()) {
+    const i = worklist.pop();
     if (!i) {
       continue;
     }
@@ -148,14 +162,14 @@ export function ForFilesSync(
             const ap = fs.realpathSync(path.join(i, dirent.name));
             const lst = fs.statSync(ap);
             if (lst.isDirectory() && recurse) {
-              queue.push(ap);
+              worklist.push(ap);
             } else if (lst.isFile()) {
-              queue.push(ap);
+              worklist.push(ap);
             }
           } else if (dirent.isDirectory() && recurse) {
-            queue.push(path.join(i, dirent.name));
+            worklist.push(path.join(i, dirent.name));
           } else if (dirent.isFile()) {
-            queue.push(path.join(i, dirent.name));
+            worklist.push(path.join(i, dirent.name));
           }
         } catch (e) {
           err('Unable to process dirent:');

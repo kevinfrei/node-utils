@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "0.20.3",
+  "version": "0.20.4",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -38,7 +38,7 @@
     "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.32.1"
+    "@freik/core-utils": "^0.33.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^1.0.3",

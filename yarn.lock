@@ -1478,10 +1478,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@freik/core-utils@npm:^0.32.1":
-  version: 0.32.1
-  resolution: "@freik/core-utils@npm:0.32.1"
-  checksum: 5c34eaa9fb97c9777d4ec776c2cc02f667b24c5a0249b2d7d9af81fdd7c90b78a953a0061a2f8ab1565a5c577c2b5a24aeb55fbc137982d5e33d67da13b63784
+"@freik/core-utils@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "@freik/core-utils@npm:0.33.0"
+  checksum: 8dfb3f733e421843dff9373f7b1abc97e33ed03817696113ae22c73034f5d86d057976337fdad270654286ae6b46a2033ec304f09b621ed313313f9a1e78e679
   languageName: node
   linkType: hard
 
@@ -1491,7 +1491,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": ^1.0.3
     "@freik/build-tools": ^3.1.6
-    "@freik/core-utils": ^0.32.1
+    "@freik/core-utils": ^0.33.0
     "@types/jest": ^27.0.2
     "@typescript-eslint/eslint-plugin": ^5.2.0
     "@typescript-eslint/parser": ^5.2.0
