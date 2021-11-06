@@ -19,22 +19,21 @@ all completely interchangeable:
 
 ```typescript
 // aliases: GetSync, Read, ReadSync, Load, and LoadSync
-function Get(name:string) => ?FTONData;
+function Get(name:string) => unknown | void;
 // aliases: ReadAsync, LoadAsync
-function GetAsync(name:string) => Promise<?FTONDatat>;
+function GetAsync(name:string) => Promise<unknown | void>;
 ```
 
-Given a _string_ name, returns an optional FTON (FlowTypeObjectNotation :D )
-data type, or a promise containing that (for the Async version).
+Given a _string_ name, returns an optional data type, or a promise containing that (for the Async version).
 
 ```typescript
 // aliases: SetSync, Write, WriteSync, Save, SaveSync
-function Set(name:string, data:FTONData) => void;
+function Set(name: string, data: unknown) => void;
 // aliases: SaveAsync, WriteAsync
-function SetAsync(name: string, data:FTONData) => Promise<void>;
+function SetAsync(name: string, data: unknown) => Promise<void>;
 ```
 
-Given a _string_ name and an FTONData type, saves that value for future
+Given a _string_ name and an unknown type, saves that value for future
 `Get`ting.
 
 ## OpenLocalBrowser
