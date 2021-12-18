@@ -22,10 +22,12 @@ export function MakeKey(text: string): Key {
 
 export function Encrypt(key: Key, data: string | Buffer): Buffer {
   const cipher = crypto.createCipheriv(algorithm, key.key, key.iv);
-  return Buffer.concat([cipher.update(data), cipher.final()]);
+  const encrypted = cipher.update(data);
+  return Buffer.concat([encrypted, cipher.final()]);
 }
 
 export function Decrypt(key: Key, data: Buffer): Buffer {
   const decipher = crypto.createDecipheriv(algorithm, key.key, key.iv);
-  return Buffer.concat([decipher.update(data), decipher.final()]);
+  const decrypted = decipher.update(data);
+  return Buffer.concat([decrypted, decipher.final()]);
 }
