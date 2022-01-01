@@ -108,12 +108,15 @@ export function SortedArrayDiffSync(
  */
 type FolderLocation = string;
 export type Watcher = (obj: string) => boolean;
-function fileWatcher(obj: unknown): Watcher {
-  return Type.isFunction(obj)
-    ? (obj as Watcher)
-    : // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (o: string) => true;
+function isWatcher(obj: unknown): obj is Watcher {
+  return Type.isFunction(obj);
 }
+
+function fileWatcher(watcher: Watcher | undefined): Watcher {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return isWatcher(watcher) ? watcher : (o: string) => true;
+}
+
 // This is used to deal with the weird overloads below
 function getIndexLocation(
   defaultLoc: string,
@@ -126,29 +129,19 @@ function getIndexLocation(
   }
 }
 
-export async function MakeFileIndex(
-  location: string,
-  indexFolderLocation?: FolderLocation,
-): Promise<FileIndex>;
-export async function MakeFileIndex(
-  location: string,
-  shouldWatch: Watcher,
-  indexFolderLocation?: FolderLocation,
-): Promise<FileIndex>;
-export async function MakeFileIndex(
-  location: string,
-  shouldWatchFileOrFolderLocation?: Watcher | FolderLocation,
-  maybeIndexFolderLocation?: FolderLocation,
-): Promise<FileIndex> {
-  const shouldWatchFile: Watcher = fileWatcher(shouldWatchFileOrFolderLocation);
-  const indexFile: FolderLocation = getIndexLocation(
-    location,
-    maybeIndexFolderLocation || shouldWatchFileOrFolderLocation,
-  );
-  /*
-   * End crap to deal with overloading and whatnot
-   */
+export type FileIndexOptions = {
+  indexFolderLocation: string;
+  fileWatcher: Watcher;
+  watchHidden: boolean;
+};
 
+export async function MakeFileIndex(
+  location: string,
+  options?: Partial<FileIndexOptions>,
+): Promise<FileIndex> {
+  const indexFile = getIndexLocation(location, options?.indexFolderLocation);
+  const shouldWatchFile = fileWatcher(options?.fileWatcher);
+  const ignoreHidden = !(options && options.watchHidden);
   /*
    * "member" data goes here
    */
@@ -195,7 +188,7 @@ export async function MakeFileIndex(
           err(`File ${filePath} doesn't appear to be under ${theLocation}`);
           return false;
         }
-        const subPath = path.xplat(filePath.substr(theLocation.length));
+        const subPath = path.xplat(filePath.substring(theLocation.length));
         if (
           !filePath.endsWith('/' + path.basename(indexFile)) &&
           shouldWatchFile(filePath)
@@ -208,6 +201,8 @@ export async function MakeFileIndex(
       {
         recurse: true,
         keepGoing: true,
+        skipHiddenFiles: ignoreHidden,
+        skipHiddenFolders: ignoreHidden,
       },
     );
     fileList = newFileList.sort(pathCompare);

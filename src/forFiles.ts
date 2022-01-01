@@ -1,25 +1,64 @@
 import { MakeError, MakeQueue, MakeStack, Type } from '@freik/core-utils';
+import { isHiddenFile } from 'is-hidden-file';
 import * as fs from 'fs';
-import * as path from './PathUtil.js';
+import * as path from 'path';
+import * as PathUtil from './PathUtil.js';
 
 const fsp = fs.promises;
 
 const err = MakeError('forFiles');
 
+export type ForFilesOptions = {
+  recurse: boolean;
+  keepGoing: boolean;
+  fileTypes: string[] | string;
+  order: 'breadth' | 'depth';
+  skipHiddenFiles: boolean;
+  skipHiddenFolders: boolean;
+  dontAssumeDotsAreHidden: boolean;
+  dontFollowSymlinks: boolean;
+};
+
+function isDotFile(filepath: string): boolean {
+  const slashed = PathUtil.trailingSlash(filepath);
+  const trimmed = slashed.substring(0, slashed.length - 1);
+  let lastSplit = trimmed.lastIndexOf('/');
+  if (lastSplit < 0 && path.sep === '\\') {
+    lastSplit = trimmed.lastIndexOf('\\');
+  }
+  return filepath[lastSplit < 0 ? 0 : lastSplit + 1] === '.';
+}
+
+function isHidden(
+  file: string,
+  skipHidden: boolean,
+  hideDots: boolean,
+): boolean {
+  if (!skipHidden) {
+    return false;
+  }
+  if (hideDots) {
+    if (isDotFile(file)) {
+      return true;
+    }
+  }
+  return isHiddenFile(file);
+}
+
 export async function ForFiles(
   seed: string | string[],
   func: (fileName: string) => Promise<boolean> | boolean,
-  opts?: {
-    recurse?: boolean;
-    keepGoing?: boolean;
-    fileTypes?: string[] | string;
-    order?: 'breadth' | 'depth';
-  },
+  opts?: Partial<ForFilesOptions>,
 ): Promise<boolean> {
   // Helper function to match the file types
   const recurse = opts && opts.recurse;
   const keepGoing = opts && opts.keepGoing;
   const fileTypes = opts && opts.fileTypes;
+  const depth = opts && opts.order === 'depth';
+  const skipHiddenFiles = opts ? !!opts.skipHiddenFiles : true;
+  const skipHiddenFolders = opts ? !!opts.skipHiddenFolders : true;
+  const hideDots = opts ? !opts.dontAssumeDotsAreHidden : true;
+  const followSymlinks = opts ? opts.dontFollowSymlinks : true;
   const fileMatcher = fileTypes
     ? (str: string): boolean => {
         const uc = str.toLocaleUpperCase();
@@ -37,10 +76,9 @@ export async function ForFiles(
     : (): boolean => true;
 
   const theSeed = Type.isString(seed) ? [seed] : seed;
-  const worklist =
-    opts && opts.order === 'depth'
-      ? MakeStack<string>(...theSeed)
-      : MakeQueue<string>(...theSeed);
+  const worklist = depth
+    ? MakeStack<string>(...theSeed)
+    : MakeQueue<string>(...theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -48,7 +86,11 @@ export async function ForFiles(
       continue;
     }
     const st = await fsp.stat(i);
-    if (st.isFile() && fileMatcher(i)) {
+    if (
+      st.isFile() &&
+      !isHidden(i, skipHiddenFiles, hideDots) &&
+      fileMatcher(i)
+    ) {
       let res = func(i);
       if (!Type.isBoolean(res)) {
         res = await res;
@@ -59,7 +101,7 @@ export async function ForFiles(
           return false;
         }
       }
-    } else if (st.isDirectory()) {
+    } else if (st.isDirectory() && !isHidden(i, skipHiddenFolders, hideDots)) {
       // For directories in the queue, we walk all their files
       let dirents: fs.Dirent[] | null = null;
       try {
@@ -73,18 +115,14 @@ export async function ForFiles(
       }
       for (const dirent of dirents) {
         try {
-          if (dirent.isSymbolicLink()) {
-            const ap = await fsp.realpath(path.join(i, dirent.name));
+          if (dirent.isSymbolicLink() && followSymlinks) {
+            const ap = await fsp.realpath(PathUtil.join(i, dirent.name));
             const lst = await fsp.stat(ap);
-            if (lst.isDirectory() && recurse) {
-              worklist.push(ap);
-            } else if (lst.isFile()) {
+            if ((lst.isDirectory() && recurse) || lst.isFile()) {
               worklist.push(ap);
             }
-          } else if (dirent.isDirectory() && recurse) {
-            worklist.push(path.join(i, dirent.name));
-          } else if (dirent.isFile()) {
-            worklist.push(path.join(i, dirent.name));
+          } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
+            worklist.push(PathUtil.join(i, dirent.name));
           }
         } catch (e) {
           err('Unable to process dirent:');
@@ -100,16 +138,16 @@ export async function ForFiles(
 export function ForFilesSync(
   seed: string | string[],
   func: (fileName: string) => boolean,
-  opts?: {
-    recurse?: boolean;
-    keepGoing?: boolean;
-    fileTypes?: string[];
-    order?: 'depth' | 'breadth';
-  },
+  opts?: Partial<ForFilesOptions>,
 ): boolean {
   const recurse = opts && opts.recurse;
   const keepGoing = opts && opts.keepGoing;
   const fileTypes = opts && opts.fileTypes;
+  const depth = opts && opts.order === 'depth';
+  const skipHiddenFiles = opts ? !!opts.skipHiddenFiles : true;
+  const skipHiddenFolders = opts ? !!opts.skipHiddenFolders : true;
+  const hideDots = opts ? !opts.dontAssumeDotsAreHidden : true;
+  const followSymlinks = opts ? opts.dontFollowSymlinks : true;
   const fileMatcher = fileTypes
     ? (str: string): boolean => {
         const uc = str.toLocaleUpperCase();
@@ -126,10 +164,9 @@ export function ForFilesSync(
       }
     : (): boolean => true;
   const theSeed: string[] = Type.isString(seed) ? [seed] : seed;
-  const worklist =
-    opts && opts.order === 'depth'
-      ? MakeStack<string>(...theSeed)
-      : MakeQueue<string>(...theSeed);
+  const worklist = depth
+    ? MakeStack<string>(...theSeed)
+    : MakeQueue<string>(...theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -137,14 +174,18 @@ export function ForFilesSync(
       continue;
     }
     const st = fs.statSync(i);
-    if (st.isFile() && fileMatcher(i)) {
+    if (
+      st.isFile() &&
+      !isHidden(i, skipHiddenFiles, hideDots) &&
+      fileMatcher(i)
+    ) {
       if (!func(i)) {
         overallResult = false;
         if (!keepGoing) {
           return false;
         }
       }
-    } else if (st.isDirectory()) {
+    } else if (st.isDirectory() && !isHidden(i, skipHiddenFolders, hideDots)) {
       // For directories in the queue, we walk all their files
       let dirents: fs.Dirent[] | null = null;
       try {
@@ -158,18 +199,14 @@ export function ForFilesSync(
       }
       for (const dirent of dirents) {
         try {
-          if (dirent.isSymbolicLink()) {
-            const ap = fs.realpathSync(path.join(i, dirent.name));
+          if (dirent.isSymbolicLink() && followSymlinks) {
+            const ap = fs.realpathSync(PathUtil.join(i, dirent.name));
             const lst = fs.statSync(ap);
-            if (lst.isDirectory() && recurse) {
-              worklist.push(ap);
-            } else if (lst.isFile()) {
+            if ((lst.isDirectory() && recurse) || lst.isFile()) {
               worklist.push(ap);
             }
-          } else if (dirent.isDirectory() && recurse) {
-            worklist.push(path.join(i, dirent.name));
-          } else if (dirent.isFile()) {
-            worklist.push(path.join(i, dirent.name));
+          } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
+            worklist.push(PathUtil.join(i, dirent.name));
           }
         } catch (e) {
           err('Unable to process dirent:');

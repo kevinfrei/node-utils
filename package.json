@@ -38,23 +38,24 @@
     "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
   },
   "dependencies": {
-    "@freik/core-utils": "^0.33.0"
+    "@freik/core-utils": "^0.34.0",
+    "is-hidden-file": "^1.1.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^1.0.3",
-    "@freik/build-tools": "^3.1.6",
-    "@types/jest": "^27.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "@typescript-eslint/parser": "^5.2.0",
-    "eslint": "^8.1.0",
+    "@eslint/eslintrc": "^1.0.5",
+    "@freik/build-tools": "^3.2.0",
+    "@types/jest": "^27.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
-    "jest": "^27.3.1",
+    "jest": "^27.4.5",
     "pinst": "^2.1.6",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4"
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
   },
   "files": [
     "lib/**/*"

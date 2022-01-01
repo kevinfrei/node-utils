@@ -33,7 +33,9 @@ const isTxt = MakeSuffixWatcher('txt');
 const notTxt = MakeSuffixWatcher().addToIgnoreList('.txt');
 
 it('Make a little File Index with only .txt files', async () => {
-  const fi = await MakeFileIndex('src/__tests__/FileIndexTest2', isTxt);
+  const fi = await MakeFileIndex('src/__tests__/FileIndexTest2', {
+    fileWatcher: isTxt,
+  });
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest2/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
@@ -41,7 +43,9 @@ it('Make a little File Index with only .txt files', async () => {
 });
 
 it('Make a little File Index without .txt files', async () => {
-  const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', notTxt);
+  const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', {
+    fileWatcher: notTxt,
+  });
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
@@ -49,7 +53,9 @@ it('Make a little File Index without .txt files', async () => {
 });
 
 it('Make a little File Index and see some file movement', async () => {
-  const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', notTxt);
+  const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', {
+    fileWatcher: notTxt,
+  });
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
@@ -76,9 +82,8 @@ it('Make a little File Index and see some file movement', async () => {
 });
 
 it('Subdirs!', async () => {
-  const fi = await MakeFileIndex(
-    'src/__tests__/SubdirTest',
-    'src/__tests__/SubdirTest/.customFileIndex.txt',
-  );
+  const fi = await MakeFileIndex('src/__tests__/SubdirTest', {
+    indexFolderLocation: 'src/__tests__/SubdirTest/.customFileIndex.txt',
+  });
   expect(fi).toBeDefined();
 });
