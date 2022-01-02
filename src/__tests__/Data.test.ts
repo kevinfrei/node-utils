@@ -20,7 +20,5 @@ test('Bigger Encryption/Decryption', () => {
   }
   const encr = Data.Encrypt(key, buf);
   const decr = Data.Decrypt(key, encr);
-  console.log(encr);
-  console.log(decr);
   expect(buf.compare(decr)).toBe(0);
 });

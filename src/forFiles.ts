@@ -23,6 +23,7 @@ function isDotFile(filepath: string): boolean {
   const slashed = PathUtil.trailingSlash(filepath);
   const trimmed = slashed.substring(0, slashed.length - 1);
   let lastSplit = trimmed.lastIndexOf('/');
+  /* istanbul ignore if */
   if (lastSplit < 0 && path.sep === '\\') {
     lastSplit = trimmed.lastIndexOf('\\');
   }
@@ -82,6 +83,7 @@ export async function ForFiles(
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
+    /* istanbul ignore if */
     if (!i) {
       continue;
     }
@@ -106,10 +108,11 @@ export async function ForFiles(
       let dirents: fs.Dirent[] | null = null;
       try {
         dirents = await fsp.readdir(i, { withFileTypes: true });
-      } catch (e) {
+      } catch (e) /* istanbul ignore next */ {
         err(`Unable to read ${i || '<unknown>'}`);
         continue;
       }
+      /* istanbul ignore if */
       if (!dirents) {
         continue;
       }
@@ -124,7 +127,7 @@ export async function ForFiles(
           } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
             worklist.push(PathUtil.join(i, dirent.name));
           }
-        } catch (e) {
+        } catch (e) /* istanbul ignore next */ {
           err('Unable to process dirent:');
           err(dirent);
           continue;
@@ -170,6 +173,7 @@ export function ForFilesSync(
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
+    /* istanbul ignore if */
     if (!i) {
       continue;
     }
@@ -190,10 +194,11 @@ export function ForFilesSync(
       let dirents: fs.Dirent[] | null = null;
       try {
         dirents = fs.readdirSync(i, { withFileTypes: true });
-      } catch (e) {
+      } catch (e) /* istanbul ignore next */ {
         err(`Unable to read ${i || '<unknown>'}`);
         continue;
       }
+      /* istanbul ignore if */
       if (!dirents) {
         continue;
       }
@@ -208,7 +213,7 @@ export function ForFilesSync(
           } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
             worklist.push(PathUtil.join(i, dirent.name));
           }
-        } catch (e) {
+        } catch (e) /* istanbul ignore next */ {
           err('Unable to process dirent:');
           err(dirent);
           continue;
