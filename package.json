@@ -1,6 +1,6 @@
 {
   "name": "@freik/node-utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "My personal set of utilities for NodeJS",
   "author": "Kevin Frei (kevinfrei@hotmail.com)",
   "license": "Unlicense",
@@ -38,21 +38,21 @@
     "chk": "yarn run format && yarn run compile && yarn run lint && yarn test"
   },
   "peerDependencies": {
-    "@freik/core-utils": "^1.0.0"
+    "@freik/core-utils": "^1.1.1"
   },
   "dependencies": {
     "is-hidden-file": "^1.1.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^1.2.3",
+    "@eslint/eslintrc": "^1.3.0",
     "@freik/build-tools": "^3.2.1",
-    "@freik/core-utils": "^1.0.1",
-    "@types/jest": "^27.5.0",
-    "@typescript-eslint/eslint-plugin": "^5.22.0",
-    "@typescript-eslint/parser": "^5.22.0",
-    "eslint": "^8.15.0",
+    "@freik/core-utils": "^1.1.1",
+    "@types/jest": "^27.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
-    "husky": "^8.0.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.0",
     "pinst": "^3.0.0",
     "prettier": "^2.6.2",
