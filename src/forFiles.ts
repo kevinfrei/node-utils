@@ -9,7 +9,7 @@ const fsp = fs.promises;
 const err = MakeError('forFiles');
 
 export type ForFilesOptions = {
-  recurse: boolean;
+  recurse: boolean | ((dirName: string) => boolean);
   keepGoing: boolean;
   fileTypes: string[] | string;
   order: 'breadth' | 'depth';
@@ -46,13 +46,32 @@ function isHidden(
   return isHiddenFile(file);
 }
 
+function tru(dirName: string): boolean {
+  return true;
+}
+function fal(dirName: string): boolean {
+  return true;
+}
+
+function getRecurseFunc(
+  opts?: Partial<ForFilesOptions>,
+): (dirName: string) => boolean {
+  if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
+    return tru;
+  }
+  if (Type.isBoolean(opts.recurse)) {
+    return opts.recurse ? tru : fal;
+  }
+  return opts.recurse;
+}
+
 export async function ForFiles(
   seed: string | string[],
   func: (fileName: string) => Promise<boolean> | boolean,
   opts?: Partial<ForFilesOptions>,
 ): Promise<boolean> {
   // Helper function to match the file types
-  const recurse = opts && opts.recurse;
+  const recurse = getRecurseFunc(opts);
   const keepGoing = opts && opts.keepGoing;
   const fileTypes = opts && opts.fileTypes;
   const depth = opts && opts.order === 'depth';
@@ -121,11 +140,16 @@ export async function ForFiles(
           if (dirent.isSymbolicLink() && followSymlinks) {
             const ap = await fsp.realpath(PathUtil.join(i, dirent.name));
             const lst = await fsp.stat(ap);
-            if ((lst.isDirectory() && recurse) || lst.isFile()) {
-              worklist.push(ap);
+            if (lst.isDirectory() || lst.isFile()) {
+              if (!lst.isDirectory() || recurse(ap)) {
+                worklist.push(ap);
+              }
             }
-          } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
-            worklist.push(PathUtil.join(i, dirent.name));
+          } else if (dirent.isDirectory() || dirent.isFile()) {
+            const fullPath = PathUtil.join(i, dirent.name);
+            if (!dirent.isDirectory() || recurse(fullPath)) {
+              worklist.push(fullPath);
+            }
           }
         } catch (e) /* istanbul ignore next */ {
           err('Unable to process dirent:');
