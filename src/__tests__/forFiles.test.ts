@@ -44,27 +44,7 @@ it('Some file type filter', () => {
     },
     { fileTypes: ['txt'] },
   );
-  ForFilesSync(
-    'src/__tests__/SubdirTest/subdir2',
-    (filename) => {
-      count++;
-      const dot = filename.lastIndexOf('.');
-      expect(dot).toBe(filename.length - 4);
-      return true;
-    },
-    { fileTypes: 'txt' },
-  );
-  ForFilesSync(
-    'src/__tests__/SubdirTest/subdir2',
-    (filename) => {
-      count++;
-      const dot = filename.lastIndexOf('.');
-      expect(dot).toBe(filename.length - 4);
-      return true;
-    },
-    { fileTypes: ['text'] },
-  );
-  expect(count).toBe(2);
+  expect(count).toBe(3);
 });
 
 it('Very Basic Async', async () => {

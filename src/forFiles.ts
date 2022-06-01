@@ -8,8 +8,7 @@ const fsp = fs.promises;
 
 const err = MakeError('forFiles');
 
-export type ForFilesOptions = {
-  recurse: boolean | ((dirName: string) => boolean);
+export type ForFilesCommonOptions = {
   keepGoing: boolean;
   fileTypes: string[] | string;
   order: 'breadth' | 'depth';
@@ -18,6 +17,14 @@ export type ForFilesOptions = {
   dontAssumeDotsAreHidden: boolean;
   dontFollowSymlinks: boolean;
 };
+
+export type ForFilesSyncOptions = {
+  recurse: boolean | ((dirName: string) => boolean);
+} & ForFilesCommonOptions;
+
+export type ForFilesOptions = {
+  recurse: boolean | ((dirName: string) => Promise<boolean> | boolean);
+} & ForFilesCommonOptions;
 
 function isDotFile(filepath: string): boolean {
   const slashed = PathUtil.trailingSlash(filepath);
@@ -46,16 +53,18 @@ function isHidden(
   return isHiddenFile(file);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function tru(dirName: string): boolean {
   return true;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function fal(dirName: string): boolean {
   return true;
 }
 
 function getRecurseFunc(
   opts?: Partial<ForFilesOptions>,
-): (dirName: string) => boolean {
+): (dirName: string) => Promise<boolean> | boolean {
   if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
     return tru;
   }
@@ -140,15 +149,35 @@ export async function ForFiles(
           if (dirent.isSymbolicLink() && followSymlinks) {
             const ap = await fsp.realpath(PathUtil.join(i, dirent.name));
             const lst = await fsp.stat(ap);
-            if (lst.isDirectory() || lst.isFile()) {
-              if (!lst.isDirectory() || recurse(ap)) {
-                worklist.push(ap);
+            if (lst.isFile()) {
+              worklist.push(ap);
+            } else if (lst.isDirectory()) {
+              const res = recurse(ap);
+              if (Type.isBoolean(res)) {
+                if (res) {
+                  worklist.push(ap);
+                }
+              } else {
+                if (await res) {
+                  worklist.push(ap);
+                }
               }
             }
           } else if (dirent.isDirectory() || dirent.isFile()) {
             const fullPath = PathUtil.join(i, dirent.name);
-            if (!dirent.isDirectory() || recurse(fullPath)) {
+            if (!dirent.isDirectory()) {
               worklist.push(fullPath);
+            } else {
+              const res = recurse(fullPath);
+              if (Type.isBoolean(res)) {
+                if (res) {
+                  worklist.push(fullPath);
+                }
+              } else {
+                if (await res) {
+                  worklist.push(fullPath);
+                }
+              }
             }
           }
         } catch (e) /* istanbul ignore next */ {
@@ -162,12 +191,24 @@ export async function ForFiles(
   return overallResult;
 }
 
+function getRecurseFuncSync(
+  opts?: Partial<ForFilesSyncOptions>,
+): (dirName: string) => boolean {
+  if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
+    return tru;
+  }
+  if (Type.isBoolean(opts.recurse)) {
+    return opts.recurse ? tru : fal;
+  }
+  return opts.recurse;
+}
+
 export function ForFilesSync(
   seed: string | string[],
   func: (fileName: string) => boolean,
-  opts?: Partial<ForFilesOptions>,
+  opts?: Partial<ForFilesSyncOptions>,
 ): boolean {
-  const recurse = opts && opts.recurse;
+  const recurse = getRecurseFuncSync(opts);
   const keepGoing = opts && opts.keepGoing;
   const fileTypes = opts && opts.fileTypes;
   const depth = opts && opts.order === 'depth';
@@ -231,11 +272,14 @@ export function ForFilesSync(
           if (dirent.isSymbolicLink() && followSymlinks) {
             const ap = fs.realpathSync(PathUtil.join(i, dirent.name));
             const lst = fs.statSync(ap);
-            if ((lst.isDirectory() && recurse) || lst.isFile()) {
+            if ((lst.isDirectory() && recurse(ap)) || lst.isFile()) {
               worklist.push(ap);
             }
-          } else if ((dirent.isDirectory() && recurse) || dirent.isFile()) {
-            worklist.push(PathUtil.join(i, dirent.name));
+          } else if (dirent.isDirectory() || dirent.isFile()) {
+            const fullPath = PathUtil.join(i, dirent.name);
+            if (dirent.isFile() || recurse(fullPath)) {
+              worklist.push(fullPath);
+            }
           }
         } catch (e) /* istanbul ignore next */ {
           err('Unable to process dirent:');
