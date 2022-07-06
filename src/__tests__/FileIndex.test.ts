@@ -1,5 +1,10 @@
 import { promises as fsp } from 'fs';
-import { MakeFileIndex, pathCompare } from '../FileIndex';
+import {
+  MakeFileIndex,
+  pathCompare,
+  SortedArrayDiff,
+  SortedArrayDiffSync,
+} from '../FileIndex';
 import { MakeSuffixWatcher } from '../StringWatcher';
 
 async function cleanup() {
@@ -55,11 +60,16 @@ it('Make a little File Index without .txt files', async () => {
 it('Make a little File Index and see some file movement', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest3', {
     fileWatcher: notTxt,
+    watchHidden: true,
   });
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
-  expect(files.sort(pathCompare)).toEqual(['file3.tmp', 'file4.dat']);
+  expect(files.sort(pathCompare)).toEqual([
+    '.hidden.dat',
+    'file3.tmp',
+    'file4.dat',
+  ]);
   const adds: string[] = [];
   const subs: string[] = [];
   try {
@@ -69,7 +79,10 @@ it('Make a little File Index and see some file movement', async () => {
     );
     await fi.rescanFiles(
       (added: string) => adds.push(added),
-      (subbed: string) => subs.push(subbed),
+      async (subbed: string) => {
+        subs.push(subbed);
+        return Promise.resolve();
+      },
     );
   } finally {
     await fsp.rename(
@@ -79,6 +92,16 @@ it('Make a little File Index and see some file movement', async () => {
   }
   expect(adds).toEqual([]);
   expect(subs).toEqual(['file3.tmp']);
+  subs.pop();
+  await fi.rescanFiles(
+    async (added: string) => {
+      adds.push(added);
+      await Promise.resolve();
+    },
+    (subbed: string) => subs.push(subbed),
+  );
+  expect(adds).toEqual(['file3.tmp']);
+  expect(subs).toEqual([]);
 });
 
 it('Subdirs!', async () => {
@@ -86,4 +109,19 @@ it('Subdirs!', async () => {
     indexFolderLocation: 'src/__tests__/SubdirTest/.customFileIndex.txt',
   });
   expect(fi).toBeDefined();
+});
+
+it('Sorted Array Diff', () => {
+  const arr1 = ['a', 'b', 'd'];
+  const arr2 = ['a', 'c', 'd'];
+  const adds: string[] = [];
+  const subs: string[] = [];
+  SortedArrayDiffSync(
+    arr1,
+    arr2,
+    (add) => adds.push(add),
+    (sub) => subs.push(sub),
+  );
+  expect(adds).toEqual(['c']);
+  expect(subs).toEqual(['b']);
 });
