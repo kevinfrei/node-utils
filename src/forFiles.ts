@@ -1,5 +1,5 @@
 import { MakeError, MakeQueue, MakeStack, Type } from '@freik/core-utils';
-import { isHiddenFile } from 'is-hidden-file';
+import { isHiddenFile } from '@freik/is-hidden-file';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as PathUtil from './PathUtil.js';

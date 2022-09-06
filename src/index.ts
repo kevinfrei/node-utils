@@ -9,3 +9,4 @@ export * from './persist.js';
 export * as ProcUtil from './ProcUtil.js';
 export type { SpawnResult } from './public-defs.js';
 export * from './StringWatcher.js';
+export * as Git from './git.js';
