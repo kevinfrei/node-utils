@@ -24,7 +24,7 @@ function Get(name:string) => unknown | void;
 function GetAsync(name:string) => Promise<unknown | void>;
 ```
 
-Given a _string_ name, returns an optional data type, or a promise containing that (for the Async version).
+Given a _string_ name, return an optional data type, or a promise containing that (for the Async version).
 
 ```typescript
 // aliases: SetSync, Write, WriteSync, Save, SaveSync

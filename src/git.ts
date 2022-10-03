@@ -8,6 +8,7 @@ export type Groups = { [keys: string]: GroupEntry };
 export interface NormalOptions {
   staged?: boolean;
   cwd?: string;
+  all?: boolean;
 }
 export interface GroupedOptions extends NormalOptions {
   groups: Groups;
@@ -25,8 +26,10 @@ export async function files(
 ): Promise<GroupedResult | string[]> {
   const options: GroupedOptions | NormalOptions = ops || {};
   const cmd = options.staged
-    ? 'git diff --diff-filter ACMR --cached --name-only'
-    : 'git ls-files';
+    ? 'git diff --diff-filter  ACMR --cached --name-only'
+    : options.all
+    ? 'git ls-files'
+    : 'git diff HEAD --name-only';
   const opts = options.cwd
     ? { encoding: 'utf8', cwd: options.cwd }
     : { encoding: 'utf8' };
