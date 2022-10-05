@@ -1,4 +1,4 @@
-import { ForFiles, ForFilesSync } from '../index';
+import { ForFiles, ForFilesSync, ForDirs } from '../index';
 
 it('Very Basic', () => {
   const seen = Array<number>(7).fill(0);
@@ -122,6 +122,32 @@ it('Some file type filter async', async () => {
       return true;
     },
     { fileTypes: ['txt'] },
+  );
+  expect(count).toBe(3);
+});
+
+it('Basic ForDirs test', async () => {
+  let count = 0;
+  const adder = (dirname: string) => {
+    count++;
+    return true;
+  };
+  // Recursion
+  await ForDirs('src/__tests__/SubdirTest', adder, { recurse: true });
+  expect(count).toBe(4);
+  count = 0;
+  // No recursion
+  await ForDirs('src/__tests__/SubdirTest', adder, { recurse: false });
+  expect(count).toBe(3);
+  count = 0;
+  // Filtering
+  await ForDirs(
+    'src/__tests__/SubdirTest',
+    (dirname) => {
+      count++;
+      return !dirname.endsWith('subdir2');
+    },
+    { recurse: true, keepGoing: true },
   );
   expect(count).toBe(3);
 });

@@ -8,6 +8,15 @@ const fsp = fs.promises;
 
 const err = MakeError('forFiles');
 
+export type ForDirsOptions = {
+  keepGoing: boolean;
+  order: 'breadth' | 'depth';
+  skipHiddenFolders: boolean;
+  dontAssumeDotsAreHidden: boolean;
+  dontFollowSymlinks: boolean;
+  recurse: boolean | ((dirName: string) => Promise<boolean> | boolean);
+};
+
 export type ForFilesCommonOptions = {
   keepGoing: boolean;
   fileTypes: string[] | string;
@@ -57,13 +66,14 @@ function isHidden(
 function tru(dirName: string): boolean {
   return true;
 }
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function fal(dirName: string): boolean {
-  return true;
+  return false;
 }
 
 function getRecurseFunc(
-  opts?: Partial<ForFilesOptions>,
+  opts?: Partial<ForFilesOptions> | Partial<ForDirsOptions>,
 ): (dirName: string) => Promise<boolean> | boolean {
   if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
     return tru;
@@ -72,6 +82,14 @@ function getRecurseFunc(
     return opts.recurse ? tru : fal;
   }
   return opts.recurse;
+}
+
+async function callMaybeFunc(
+  func: (param: string) => Promise<boolean> | boolean,
+  val: string,
+): Promise<boolean> {
+  const res = func(val);
+  return Type.isBoolean(res) ? res : await res;
 }
 
 export async function ForFiles(
@@ -121,11 +139,7 @@ export async function ForFiles(
       !isHidden(i, skipHiddenFiles, hideDots) &&
       fileMatcher(i)
     ) {
-      let res = func(i);
-      if (!Type.isBoolean(res)) {
-        res = await res;
-      }
-      if (res !== true) {
+      if ((await callMaybeFunc(func, i)) !== true) {
         overallResult = false;
         if (!keepGoing) {
           return false;
@@ -152,15 +166,8 @@ export async function ForFiles(
             if (lst.isFile()) {
               worklist.push(ap);
             } else if (lst.isDirectory()) {
-              const res = recurse(ap);
-              if (Type.isBoolean(res)) {
-                if (res) {
-                  worklist.push(ap);
-                }
-              } else {
-                if (await res) {
-                  worklist.push(ap);
-                }
+              if (await callMaybeFunc(recurse, ap)) {
+                worklist.push(ap);
               }
             }
           } else if (dirent.isDirectory() || dirent.isFile()) {
@@ -168,15 +175,8 @@ export async function ForFiles(
             if (!dirent.isDirectory()) {
               worklist.push(fullPath);
             } else {
-              const res = recurse(fullPath);
-              if (Type.isBoolean(res)) {
-                if (res) {
-                  worklist.push(fullPath);
-                }
-              } else {
-                if (await res) {
-                  worklist.push(fullPath);
-                }
+              if (await callMaybeFunc(recurse, fullPath)) {
+                worklist.push(fullPath);
               }
             }
           }
@@ -279,6 +279,83 @@ export function ForFilesSync(
             const fullPath = PathUtil.join(i, dirent.name);
             if (dirent.isFile() || recurse(fullPath)) {
               worklist.push(fullPath);
+            }
+          }
+        } catch (e) /* istanbul ignore next */ {
+          err('Unable to process dirent:');
+          err(dirent);
+          continue;
+        }
+      }
+    }
+  }
+  return overallResult;
+}
+
+export async function ForDirs(
+  seed: string | string[],
+  dirProcessor: (dirName: string) => Promise<boolean> | boolean,
+  opts?: Partial<ForDirsOptions>,
+): Promise<boolean> {
+  // Helper function to match the file types
+  const recurse = getRecurseFunc(opts);
+  const keepGoing = opts && opts.keepGoing;
+  const depth = opts && opts.order === 'depth';
+  const skipHiddenFolders = opts ? !!opts.skipHiddenFolders : true;
+  const hideDots = opts ? !opts.dontAssumeDotsAreHidden : true;
+  const followSymlinks = opts ? opts.dontFollowSymlinks : true;
+  const theSeed = Type.isString(seed) ? [seed] : seed;
+  const worklist = depth
+    ? MakeStack<string>(...theSeed)
+    : MakeQueue<string>(...theSeed);
+  let overallResult = true;
+  while (!worklist.empty()) {
+    const i = worklist.pop();
+    /* istanbul ignore if */
+    if (!i) {
+      continue;
+    }
+    const st = await fsp.stat(i);
+    if (st.isDirectory() && !isHidden(i, skipHiddenFolders, hideDots)) {
+      // For directories in the queue, we put all their dirs on the queue
+      let dirents: fs.Dirent[] | null = null;
+      try {
+        dirents = await fsp.readdir(i, { withFileTypes: true });
+      } catch (e) /* istanbul ignore next */ {
+        err(`Unable to read ${i || '<unknown>'}`);
+        continue;
+      }
+      /* istanbul ignore if */
+      if (!dirents) {
+        continue;
+      }
+      for (const dirent of dirents) {
+        try {
+          if (dirent.isSymbolicLink() && followSymlinks) {
+            const symFullPath = PathUtil.join(i, dirent.name);
+            const ap = await fsp.realpath(symFullPath);
+            const lst = await fsp.stat(ap);
+            if (lst.isDirectory()) {
+              if ((await callMaybeFunc(dirProcessor, symFullPath)) !== true) {
+                overallResult = false;
+                if (!keepGoing) {
+                  return false;
+                }
+              } else if (await callMaybeFunc(recurse, ap)) {
+                worklist.push(ap);
+              }
+            }
+          } else if (dirent.isDirectory()) {
+            const fullPath = PathUtil.join(i, dirent.name);
+            if (dirent.isDirectory()) {
+              if ((await callMaybeFunc(dirProcessor, fullPath)) !== true) {
+                overallResult = false;
+                if (!keepGoing) {
+                  return false;
+                }
+              } else if (await callMaybeFunc(recurse, fullPath)) {
+                worklist.push(fullPath);
+              }
             }
           }
         } catch (e) /* istanbul ignore next */ {
