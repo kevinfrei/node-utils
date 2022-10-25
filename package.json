@@ -44,13 +44,13 @@
     "@freik/is-hidden-file": "^1.10.10"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^1.3.2",
-    "@freik/build-tools": "^3.4.1",
+    "@eslint/eslintrc": "^1.3.3",
+    "@freik/build-tools": "^3.4.2",
     "@freik/core-utils": "^1.2.0",
     "@types/jest": "^28.1.8",
-    "@typescript-eslint/eslint-plugin": "^5.38.1",
-    "@typescript-eslint/parser": "^5.38.1",
-    "eslint": "^8.24.0",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.1",
     "jest": "^28.1.3",
