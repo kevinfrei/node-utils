@@ -4,6 +4,8 @@ import { promisify } from 'util';
 import {
   arrayToTextFileAsync,
   hideFile,
+  size,
+  sizeAsync,
   textFileToArrayAsync,
 } from '../FileUtil';
 
@@ -16,7 +18,7 @@ module.exports.getGitUser = async function getGitUser() {
   const email = await exec('git config --global user.email');
   return { name, email };
 };
-test('array to text file and back again', async () => {
+it('array to text file and back again', async () => {
   const data = 'a b c d e f g';
   const fileName = 'textFile.txt';
   try {
@@ -31,7 +33,7 @@ test('array to text file and back again', async () => {
   expect(data).toEqual(result);
 });
 
-test('hiding a file on MacOS/Windows', async () => {
+it('hiding a file on MacOS/Windows', async () => {
   const pathName = 'testFile.empty';
   if (process.platform === 'darwin') {
     try {
@@ -74,4 +76,11 @@ test('hiding a file on MacOS/Windows', async () => {
   } else {
     console.log('hiding files NYI on Windows or Linux');
   }
+});
+
+it('Some more minor things', async () => {
+  expect(size('src/__tests__/FileIndexTest/file1.txt')).toBe(1);
+  expect(await sizeAsync('src/__tests__/FileIndexTest/file2.txt')).toBe(1);
+  expect(size('src/__tests__/FileIndexTest/file1.nope')).toBe(-1);
+  expect(await sizeAsync('src/__tests__/FileIndexTest/file2.nope')).toBe(-1);
 });

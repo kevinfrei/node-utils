@@ -14,15 +14,19 @@ export function getTemp(name: string, ext?: string): string {
 export function getExtNoDot(fileName: string): string {
   const ext: string = path.extname(fileName);
   if (!ext) return ext;
-  return ext.substr(1);
+  return ext.substring(1);
 }
 
 export function changeExt(fileName: string, newExt: string): string {
   const ext: string = getExtNoDot(fileName);
   if (newExt && newExt.length > 1 && newExt[0] === '.') {
-    newExt = newExt.substr(1);
+    newExt = newExt.substring(1);
   }
-  return fileName.substr(0, fileName.length - ext.length) + newExt;
+  let baseName = fileName.substring(0, fileName.length - ext.length);
+  if (!baseName.endsWith('.')) {
+    baseName += '.';
+  }
+  return baseName + newExt;
 }
 
 // Backslashes are annoying
@@ -32,7 +36,7 @@ export function xplat(pathName: string): string {
 
 // Make sure the path has a final slash on it
 export function trailingSlash(pathName: string): string {
-  if (pathName.endsWith(path.sep) || pathName.endsWith('/')) {
+  if (pathName.endsWith('\\') || pathName.endsWith('/')) {
     return xplat(pathName);
   } else {
     return xplat(pathName + path.sep);
@@ -41,7 +45,7 @@ export function trailingSlash(pathName: string): string {
 
 // xplat helpers
 export function resolve(pathName: string): string {
-  return xplat(path.resolve(pathName));
+  return xplat(path.resolve(xplat(pathName)));
 }
 
 export function join(...pathNames: string[]): string {
@@ -53,21 +57,22 @@ export function dirname(pathname: string): string {
 }
 
 export async function getRoots(): Promise<string[]> {
-  if (os.platform() === 'win32') {
-    const { stdout, stderr } = await exec('wmic logicaldisk get name');
-    if (stderr.length > 0) {
-      return [];
-    }
-    return stdout
-      .split('\r\r\n')
-      .filter((value) => /[A-Za-z]:/.test(value))
-      .map((value) => value.trim());
-  } else if (os.platform() === 'darwin') {
-    const subdirs = await fsp.readdir('/Volumes');
-    return subdirs.map((v) => path.join('/Volumes', v));
-  } else {
-    // TODO: Linux support
-    return ['linux NYI'];
+  switch (os.platform()) {
+    case 'win32':
+      const { stdout, stderr } = await exec('wmic logicaldisk get name');
+      if (stderr.length > 0) {
+        return [];
+      }
+      return stdout
+        .split('\r\r\n')
+        .filter((value) => /[A-Za-z]:/.test(value))
+        .map((value) => value.trim());
+    case 'darwin':
+      const subdirs = await fsp.readdir('/Volumes');
+      return subdirs.map((v) => path.join('/Volumes', v));
+    default:
+      // TODO: Linux support
+      return ['linux NYI'];
   }
 }
 
