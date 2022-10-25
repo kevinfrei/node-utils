@@ -25,7 +25,7 @@ export type FileIndex = {
 
 export function pathCompare(a: string | null, b: string | null): number {
   if (a === null) return b !== null ? 1 : 0;
-  if (b === null) return a !== null ? -1 : 0;
+  if (b === null) return -1;
   const m = a.toLocaleUpperCase();
   const n = b.toLocaleUpperCase();
   // Don't use localeCompare: it will make some things equal that aren't *quite*
@@ -148,8 +148,8 @@ export async function MakeFileIndex(
   // non-const: these things update "atomically" so the whole array gets changed
   let fileList: string[] = [];
   let lastScanTime: Date | null = null;
-  const theLocation =
-    path.xplat(location) + (location.endsWith('/') ? '' : '/');
+  const tmpLoc = path.xplat(location);
+  const theLocation = tmpLoc.endsWith('/') ? tmpLoc : tmpLoc + '/';
   // Read the file list from disk, either from the MDF cache,
   // or directly from the path provided
   async function loadFileIndex(): Promise<boolean> {
@@ -168,6 +168,7 @@ export async function MakeFileIndex(
     } catch (e) {
       /* */
     }
+    /* istanbul ignore next */
     return false;
   }
 
@@ -184,6 +185,7 @@ export async function MakeFileIndex(
       theLocation,
       (platPath: string) => {
         const filePath = path.xplat(platPath);
+        /* istanbul ignore if */
         if (!filePath.startsWith(theLocation)) {
           err(`File ${filePath} doesn't appear to be under ${theLocation}`);
           return false;

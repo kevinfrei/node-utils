@@ -25,8 +25,34 @@ it('Make a little File Index', async () => {
   const fi = await MakeFileIndex('src/__tests__/FileIndexTest');
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest/');
   const files: string[] = [];
-  fi.forEachFileSync((pathName: string) => files.push(pathName));
+  await fi.forEachFile((pathName: string) => files.push(pathName));
   expect(files.sort(pathCompare)).toEqual([
+    'file1.txt',
+    'file2.txt',
+    'file3.tmp',
+    'file4.dat',
+  ]);
+  expect(pathCompare('a', null)).toBe(-1);
+  expect(pathCompare(null, 'b')).toBe(1);
+  expect(pathCompare(null, null)).toBe(0);
+});
+
+it('Make a little File Index and reload it', async () => {
+  const fi = await MakeFileIndex('src/__tests__/FileIndexTest/');
+  expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest/');
+  const files: string[] = [];
+  await fi.forEachFile((pathName: string) => files.push(pathName));
+  expect(files.sort(pathCompare)).toEqual([
+    'file1.txt',
+    'file2.txt',
+    'file3.tmp',
+    'file4.dat',
+  ]);
+  const fi2 = await MakeFileIndex('src/__tests__/FileIndexTest');
+  expect(fi2.getLocation()).toEqual('src/__tests__/FileIndexTest/');
+  const files2: string[] = [];
+  await fi2.forEachFile((pathName: string) => files2.push(pathName));
+  expect(files2.sort(pathCompare)).toEqual([
     'file1.txt',
     'file2.txt',
     'file3.tmp',
@@ -43,7 +69,10 @@ it('Make a little File Index with only .txt files', async () => {
   });
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest2/');
   const files: string[] = [];
-  fi.forEachFileSync((pathName: string) => files.push(pathName));
+  await fi.forEachFile((pathName: string) => {
+    files.push(pathName);
+    return Promise.resolve();
+  });
   expect(files.sort(pathCompare)).toEqual(['file1.txt', 'file2.txt']);
 });
 
@@ -72,6 +101,8 @@ it('Make a little File Index and see some file movement', async () => {
   ]);
   const adds: string[] = [];
   const subs: string[] = [];
+  let afterScan = new Date();
+  const beforeScan = new Date();
   try {
     await fsp.rename(
       'src/__tests__/FileIndexTest3/file3.tmp',
@@ -89,9 +120,15 @@ it('Make a little File Index and see some file movement', async () => {
       'src/__tests__/FileIndexTest3/file3.txt',
       'src/__tests__/FileIndexTest3/file3.tmp',
     );
+    afterScan = new Date();
   }
   expect(adds).toEqual([]);
   expect(subs).toEqual(['file3.tmp']);
+  const lastScan = fi.getLastScanTime();
+  expect(lastScan === null).toBeFalsy();
+  if (lastScan === null) throw Error('Nope');
+  expect(lastScan.valueOf()).toBeGreaterThanOrEqual(beforeScan.valueOf());
+  expect(lastScan.valueOf()).toBeLessThanOrEqual(afterScan.valueOf());
   subs.pop();
   await fi.rescanFiles(
     async (added: string) => {
