@@ -1,13 +1,16 @@
 import { exec as execAsync } from 'child_process';
-import { promises as fsp } from 'fs';
+import fs from 'fs';
 import { promisify } from 'util';
 import {
+  arrayToTextFile,
   arrayToTextFileAsync,
   hideFile,
   size,
   sizeAsync,
+  textFileToArray,
   textFileToArrayAsync,
 } from '../FileUtil';
+const { promises: fsp } = fs;
 
 const exec = promisify(execAsync);
 
@@ -18,7 +21,8 @@ module.exports.getGitUser = async function getGitUser() {
   const email = await exec('git config --global user.email');
   return { name, email };
 };
-it('array to text file and back again', async () => {
+
+it('async array to text file and back again', async () => {
   const data = 'a b c d e f g';
   const fileName = 'textFile.txt';
   try {
@@ -29,6 +33,21 @@ it('array to text file and back again', async () => {
   const result = newData.join(' ');
   try {
     await fsp.unlink(fileName);
+  } catch (e) {}
+  expect(data).toEqual(result);
+});
+
+it('array to text file and back again', () => {
+  const data = 'a b c d e f g';
+  const fileName = 'textFile.txt';
+  try {
+    fs.unlinkSync(fileName);
+  } catch (e) {}
+  arrayToTextFile(data.split(' '), fileName);
+  const newData = textFileToArray(fileName);
+  const result = newData.join(' ');
+  try {
+    fs.unlinkSync(fileName);
   } catch (e) {}
   expect(data).toEqual(result);
 });

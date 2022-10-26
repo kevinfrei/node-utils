@@ -20,6 +20,7 @@ export async function spawnAsync(
     const child = args
       ? cp.spawn(command, args, options as cp.SpawnSyncOptions)
       : cp.spawn(command, options as cp.SpawnSyncOptions);
+    /* istanbul ignore if */
     if (!child.stdout) {
       return { error: 'no stdout' };
     }
@@ -27,8 +28,9 @@ export async function spawnAsync(
       // 'close', 'end'
       sr.stdout = sr.stdout.toString() + data.toString();
     });
+    /* istanbul ignore if */
     if (!child.stderr) {
-      return { error: 'no stdout' };
+      return { error: 'no stderr' };
     }
     child.stderr.on('data', (data: Buffer | string) => {
       // 'close', 'end'
@@ -36,6 +38,7 @@ export async function spawnAsync(
     });
     child.on('close', (code: number, signal: string | null) => {
       if (signal) {
+        /* istanbul ignore next */
         reject(signal);
       } else {
         sr.status = code;
@@ -45,6 +48,7 @@ export async function spawnAsync(
       }
     });
     child.on('error', (err: any) => {
+      /* istanbul ignore next */
       reject(err);
     });
   });
