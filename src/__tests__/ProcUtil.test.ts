@@ -1,5 +1,7 @@
 import { spawnAsync, spawnRes, spawnResAsync } from '../ProcUtil';
 
+jest.setTimeout(15000);
+
 it('spawnAsync test 1', async () => {
   const res = await spawnAsync('git', ['status']);
   expect(res.stdout.indexOf('On branch ')).toBe(0);
