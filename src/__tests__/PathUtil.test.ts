@@ -42,8 +42,9 @@ it('A few other operations', () => {
   expect(trailingSlash('/a/b/c')).toBe('/a/b/c/');
   expect(trailingSlash('\\a/b\\c')).toBe('/a/b/c/');
   expect(trailingSlash('\\a\\b\\')).toBe('/a/b/');
-  expect(resolve('/a/../b/c/..')).toBe('/b');
-  expect(resolve('\\a\\.\\b\\c\\.')).toBe('/a/b/c');
+  const prefix = os.platform() === 'win32' ? 'c:' : '';
+  expect(resolve('/a/../b/c/..').toLowerCase()).toBe(prefix + '/b');
+  expect(resolve('\\a\\.\\b\\c\\.').toLowerCase()).toBe(prefix + '/a/b/c');
   expect(join('a', 'b')).toBe('a/b');
   expect(join('a/b', 'c\\d')).toBe('a/b/c/d');
   expect(dirname('a/b')).toBe('a');
@@ -61,6 +62,7 @@ it('Roots', async () => {
       for (const r of roots) {
         expect(r.indexOf(':')).toBe(1);
       }
+      break;
     default:
       // Test for linux!
       expect(false).toBeTruthy();

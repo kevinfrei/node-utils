@@ -1,13 +1,15 @@
+import os from 'os';
 import { spawnAsync, spawnRes, spawnResAsync } from '../ProcUtil';
 
 jest.setTimeout(15000);
 
+const isWin = os.platform() === 'win32';
 it('spawnAsync test 1', async () => {
   const res = await spawnAsync('git', ['status']);
   expect(res.stdout.indexOf('On branch ')).toBe(0);
 });
 it('spawnAsync test 2', async () => {
-  const badRes = await spawnAsync('yarn', ['shit']);
+  const badRes = await spawnAsync(isWin ? 'yarn.cmd' : 'yarn', ['shit']);
   //  console.log(badRes);
   expect(badRes.status).toBe(1);
   expect(badRes.stdout.indexOf('Usage Error')).toBeGreaterThanOrEqual(0);
@@ -29,7 +31,7 @@ it('more spawn async tests', async () => {
   } catch (e) {
     console.log(e);
   }
-  const badRe2 = await spawnResAsync('yarn', ['shit']);
+  const badRe2 = await spawnResAsync(isWin ? 'yarn.cmd' : 'yarn', ['shit']);
   expect(badRe2).toBeFalsy();
 });
 
