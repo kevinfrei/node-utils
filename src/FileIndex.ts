@@ -192,7 +192,7 @@ export async function MakeFileIndex(
         }
         const subPath = path.xplat(filePath.substring(theLocation.length));
         if (
-          !filePath.endsWith('/' + path.basename(indexFile)) &&
+          filePath.toLocaleUpperCase() !== indexFile.toLocaleUpperCase() &&
           shouldWatchFile(filePath)
         ) {
           // the file path is relative to the root, and should always use /
