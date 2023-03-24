@@ -33,6 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@freik/core-utils", "npm:1.3.4"],\
             ["@freik/is-hidden-file", "npm:1.10.11"],\
             ["@types/jest", "npm:29.5.0"],\
+            ["@types/node", "npm:18.15.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["@typescript-eslint/parser", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["eslint", "npm:8.36.0"],\
@@ -3810,6 +3811,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@freik/is-hidden-file", "npm:1.10.11"],\
             ["@types/freik__core-utils", null],\
             ["@types/jest", "npm:29.5.0"],\
+            ["@types/node", "npm:18.15.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["@typescript-eslint/parser", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["eslint", "npm:8.36.0"],\
@@ -3837,6 +3839,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@freik/core-utils", "npm:1.3.4"],\
             ["@freik/is-hidden-file", "npm:1.10.11"],\
             ["@types/jest", "npm:29.5.0"],\
+            ["@types/node", "npm:18.15.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["@typescript-eslint/parser", "virtual:7015a822210cf30ce1a84d85b34ce7c55f5a9891b7e1ba6286d2b980630250408974b97d263b5532536c478f1b1876d1e6a0c013432f5d1b2416213dc190e6a9#npm:5.56.0"],\
             ["eslint", "npm:8.36.0"],\
@@ -4709,6 +4712,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-node-npm-16.11.1-30ee26b246-22cea470b8.zip/node_modules/@types/node/",\
           "packageDependencies": [\
             ["@types/node", "npm:16.11.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:18.15.7", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-18.15.7-61db238da4-08d1dd1898.zip/node_modules/@types/node/",\
+          "packageDependencies": [\
+            ["@types/node", "npm:18.15.7"]\
           ],\
           "linkType": "HARD"\
         }]\

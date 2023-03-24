@@ -1,10 +1,11 @@
 import { MakeError, MakeQueue, MakeStack, Type } from '@freik/core-utils';
 import { isHiddenFile } from '@freik/is-hidden-file';
+import { promises as fsp } from 'fs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as PathUtil from './PathUtil.js';
 
-const fsp = fs.promises;
+// const fsp = fs.promises;
 
 const err = MakeError('forFiles');
 

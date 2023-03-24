@@ -7,7 +7,8 @@ import {
   SeqNum,
   SyncFunc,
 } from '@freik/core-utils';
-import fs, { promises as fsp } from 'fs';
+import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import * as PathUtil from './PathUtil.js';
 
 const log = MakeLogger('persist');

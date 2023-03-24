@@ -1,5 +1,5 @@
 import { Type } from '@freik/core-utils';
-import path from 'path';
+import * as path from 'path';
 
 export type StringWatcher = {
   (str: string): boolean;

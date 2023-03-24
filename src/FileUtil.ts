@@ -1,5 +1,6 @@
-import ofs, { promises as fsp } from 'fs';
-import path from 'path';
+import * as ofs from 'fs';
+import { promises as fsp } from 'fs';
+import * as path from 'path';
 import { spawnResAsync } from './ProcUtil.js';
 
 const fs = {
