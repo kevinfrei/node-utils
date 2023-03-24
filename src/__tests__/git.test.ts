@@ -4,8 +4,8 @@ import { Git } from '../index';
 it('Simple git.files tests', async () => {
   const files = await Git.files({ all: true });
   expect(Type.isArray(files)).toBeTruthy();
-  expect(files.length).toBeGreaterThan(25);
-  expect(files.length).toBeLessThan(100);
+  expect(files.length).toBeGreaterThan(950);
+  expect(files.length).toBeLessThan(1000);
 
   const noFiles = await Git.files();
   // This will fail if we have any edits :/
