@@ -8,7 +8,9 @@
     "url": "https://github.com/kevinfrei/node-utils/issues"
   },
   "homepage": "https://github.com/kevinfrei/node-utils#readme",
-  "keywords": ["node-utils"],
+  "keywords": [
+    "node-utils"
+  ],
   "repository": "github:kevinfrei/node-utils",
   "module": "./lib/esm/index.js",
   "main": "./lib/cjs/index.js",
@@ -40,8 +42,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^2.0.1",
-    "@freik/build-tools": "3.4.10",
-    "@freik/core-utils": "^1.3.5",
+    "@freik/build-tools": "^3.4.12",
+    "@freik/core-utils": "^1.4.1",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.7",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
@@ -56,7 +58,9 @@
     "ts-jest": "^29.0.5",
     "typescript": "^5.0.2"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "engines": {
     "node": "^14.13.1 || >= 16.0.0"
   },
