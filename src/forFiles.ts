@@ -125,8 +125,8 @@ export async function ForFiles(
 
   const theSeed = isString(seed) ? [seed] : seed;
   const worklist: Container<string> = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -234,8 +234,8 @@ export function ForFilesSync(
     : (): boolean => true;
   const theSeed: string[] = isString(seed) ? [seed] : seed;
   const worklist = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -307,8 +307,8 @@ export async function ForDirs(
   const followSymlinks = opts ? opts.dontFollowSymlinks : true;
   const theSeed = isString(seed) ? [seed] : seed;
   const worklist = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
