@@ -1,9 +1,10 @@
-import { MakeError, Type } from '@freik/core-utils';
+import { isFunction, isPromise, isString, typecheck } from '@freik/typechk';
 import { arrayToTextFileAsync, textFileToArrayAsync } from './FileUtil.js';
 import { ForFiles } from './forFiles.js';
 import * as path from './PathUtil.js';
+import debugModule from 'debug';
 
-const err = MakeError('FileIndex-err');
+const err = debugModule('node-utils:FileIndex');
 
 export type PathHandlerAsync = (pathName: string) => Promise<void>;
 export type PathHandlerSync = (pathName: string) => void;
@@ -53,7 +54,7 @@ export async function SortedArrayDiff(
       // old item goes "before" new item, so we've deleted old item
       if (delFn) {
         const foo = delFn(oldItem);
-        if (Type.isPromise(foo)) {
+        if (isPromise(foo)) {
           await foo;
         }
       }
@@ -62,7 +63,7 @@ export async function SortedArrayDiff(
       // new item goes "before" old item, so we've added new item
       if (addFn) {
         const bar = addFn(newItem);
-        if (Type.isPromise(bar)) {
+        if (isPromise(bar)) {
           await bar;
         }
       }
@@ -107,10 +108,9 @@ export function SortedArrayDiffSync(
  * Begin crap to deal with overloading and whatnot
  */
 type FolderLocation = string;
+const isFolderLocation: typecheck<FolderLocation> = isString;
 export type Watcher = (obj: string) => boolean;
-function isWatcher(obj: unknown): obj is Watcher {
-  return Type.isFunction(obj);
-}
+const isWatcher: typecheck<Watcher> = isFunction as typecheck<Watcher>;
 
 function fileWatcher(watcher: Watcher | undefined): Watcher {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -122,11 +122,7 @@ function getIndexLocation(
   defaultLoc: string,
   obj?: Watcher | FolderLocation,
 ): FolderLocation {
-  if (obj !== undefined && !Type.isFunction(obj) && Type.isString(obj)) {
-    return obj;
-  } else {
-    return path.join(defaultLoc, '.fileIndex.txt');
-  }
+  return isFolderLocation(obj) ? obj : path.join(defaultLoc, '.fileIndex.txt');
 }
 
 export type FileIndexOptions = {
@@ -239,7 +235,7 @@ export async function MakeFileIndex(
     forEachFile: async (fn: PathHandlerAll): Promise<void> => {
       for (const f of fileList) {
         const res = fn(f);
-        if (Type.isPromise(res)) {
+        if (isPromise(res)) {
           await res;
         }
       }

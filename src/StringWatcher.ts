@@ -1,4 +1,4 @@
-import { Type } from '@freik/core-utils';
+import { isString } from '@freik/typechk';
 import * as path from 'path';
 
 export type StringWatcher = {
@@ -37,7 +37,7 @@ export function MakeStringWatcher(...maybeWatchList: string[]): StringWatcher {
     ...types: (string | Iterable<string>)[]
   ): StringWatcher {
     for (const type of types) {
-      for (const elem of Type.isString(type) ? [type] : type) {
+      for (const elem of isString(type) ? [type] : type) {
         toWatch.add(elem);
         toIgnore.delete(elem);
       }
@@ -49,7 +49,7 @@ export function MakeStringWatcher(...maybeWatchList: string[]): StringWatcher {
     ...types: (string | Iterable<string>)[]
   ): StringWatcher {
     for (const type of types) {
-      for (const elem of Type.isString(type) ? [type] : type) {
+      for (const elem of isString(type) ? [type] : type) {
         toIgnore.add(elem);
         toWatch.delete(elem);
       }
@@ -94,7 +94,7 @@ export function MakeSuffixWatcher(...maybeWatchList: string[]): StringWatcher {
     ...types: (string | Iterable<string>)[]
   ): StringWatcher {
     for (const type of types) {
-      for (const elem of Type.isString(type) ? [type] : type) {
+      for (const elem of isString(type) ? [type] : type) {
         const val = elem.startsWith('.')
           ? elem.toLocaleLowerCase()
           : '.' + elem.toLocaleLowerCase();
@@ -109,7 +109,7 @@ export function MakeSuffixWatcher(...maybeWatchList: string[]): StringWatcher {
     ...types: (string | Iterable<string>)[]
   ): StringWatcher {
     for (const type of types) {
-      for (const elem of Type.isString(type) ? [type] : type) {
+      for (const elem of isString(type) ? [type] : type) {
         const val = elem.startsWith('.')
           ? elem.toLocaleLowerCase()
           : '.' + elem.toLocaleLowerCase();

@@ -2320,10 +2320,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@freik/containers@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@freik/containers@npm:0.1.0"
+  dependencies:
+    "@freik/helpers": ^0.1.0
+    "@freik/typechk": ^0.1.0
+  checksum: 244cd2b3ec2e2c3423d8416ff917dbc7d075d66226962b7b3fee3ed64f0ffd9d4fed77fcbf7c608fae6c5ca4a90296df9182cd2bad0e91e46398425d473f24e8
+  languageName: node
+  linkType: hard
+
 "@freik/core-utils@npm:^1.4.1":
   version: 1.4.1
   resolution: "@freik/core-utils@npm:1.4.1"
   checksum: 41762b7ed5a929d47af0278cc07e039ac1a4ec3324d27f46f16dbdf639a1d0ef5e279b7ceebb34a15e4bb139d6aeb3f27b633aa580d187eecd8171e892875e73
+  languageName: node
+  linkType: hard
+
+"@freik/helpers@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@freik/helpers@npm:0.1.0"
+  dependencies:
+    "@freik/typechk": ^0.1.0
+  checksum: dfea8daaae6fce5fc497eca0b45dd69f176a2991e80950c3c6bdcd55d00ea838bea505a183abc2bd9fb4a8a30a3f5ee285e053c6cd549627bd79a606f465dd74
   languageName: node
   linkType: hard
 
@@ -2344,12 +2363,17 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": ^2.0.1
     "@freik/build-tools": ^3.4.12
+    "@freik/containers": ^0.1.0
     "@freik/core-utils": ^1.4.1
+    "@freik/helpers": ^0.1.0
     "@freik/is-hidden-file": ^1.10.11
+    "@freik/typechk": ^0.1.0
+    "@types/debug": ^4.1.7
     "@types/jest": ^29.5.0
     "@types/node": ^18.15.10
     "@typescript-eslint/eslint-plugin": ^5.57.0
     "@typescript-eslint/parser": ^5.57.0
+    debug: ^4.3.4
     eslint: ^8.36.0
     eslint-config-prettier: ^8.8.0
     husky: ^8.0.3
@@ -2363,6 +2387,13 @@ __metadata:
     "@freik/core-utils": ">=1.2.0"
   languageName: unknown
   linkType: soft
+
+"@freik/typechk@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@freik/typechk@npm:0.1.0"
+  checksum: 99db2186877b352ca45b8b98c3312938876cdab389a26493996a038d5ecf79c21ba233dfb08bf0458dc69f4f3e47cfc86c01d17b07e5e59e0aabcd9e4f4efea3
+  languageName: node
+  linkType: hard
 
 "@gar/promisify@npm:^1.0.1":
   version: 1.1.2
@@ -3035,6 +3066,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/debug@npm:^4.1.7":
+  version: 4.1.7
+  resolution: "@types/debug@npm:4.1.7"
+  dependencies:
+    "@types/ms": "*"
+  checksum: 0a7b89d8ed72526858f0b61c6fd81f477853e8c4415bb97f48b1b5545248d2ae389931680b94b393b993a7cfe893537a200647d93defe6d87159b96812305adc
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/estree@npm:1.0.0"
@@ -3097,6 +3137,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/ms@npm:*":
+  version: 0.7.31
+  resolution: "@types/ms@npm:0.7.31"
+  checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
   languageName: node
   linkType: hard
 

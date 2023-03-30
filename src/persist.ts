@@ -1,6 +1,4 @@
 import {
-  MakeError,
-  MakeLogger,
   MakeReaderWriter,
   OnlyOneWaiting,
   ReaderWriter,
@@ -10,9 +8,10 @@ import {
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import * as PathUtil from './PathUtil.js';
+import debugModule from 'debug';
 
-const log = MakeLogger('persist');
-const err = MakeError('persist-err', false);
+const log = debugModule('node-utils:persist:log');
+const err = debugModule('node-utils:persist:err');
 
 export type ValueUpdateListener = (val: string) => void;
 

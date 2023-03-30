@@ -1,4 +1,4 @@
-import { Pickle, Unpickle } from '@freik/core-utils';
+import { Pickle, Unpickle } from '@freik/typechk';
 import * as ofs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
