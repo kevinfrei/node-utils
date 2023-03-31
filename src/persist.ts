@@ -1,14 +1,14 @@
-import {
-  MakeReaderWriter,
-  OnlyOneWaiting,
-  ReaderWriter,
-  SeqNum,
-  SyncFunc,
-} from '@freik/core-utils';
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import * as PathUtil from './PathUtil.js';
 import debugModule from 'debug';
+import SeqNum from '@freik/seqnum';
+import {
+  MakeReaderWriter,
+  OnlyOneWaiting,
+  ReaderWriter,
+  SyncFunc,
+} from '@freik/sync';
 
 const log = debugModule('node-utils:persist:log');
 const err = debugModule('node-utils:persist:err');

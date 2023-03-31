@@ -1,4 +1,6 @@
 import { isFunction, isPromise, isString, typecheck } from '@freik/typechk';
+import { NormalizedStringCompare } from '@freik/text';
+import { SortedArrayDiff } from '@freik/helpers';
 import { arrayToTextFileAsync, textFileToArrayAsync } from './FileUtil.js';
 import { ForFiles } from './forFiles.js';
 import * as path from './PathUtil.js';
@@ -23,86 +25,6 @@ export type FileIndex = {
     delFile?: PathHandlerAll,
   ) => Promise<void>;
 };
-
-export function pathCompare(a: string | null, b: string | null): number {
-  if (a === null) return b !== null ? 1 : 0;
-  if (b === null) return -1;
-  const m = a.toLocaleUpperCase();
-  const n = b.toLocaleUpperCase();
-  // Don't use localeCompare: it will make some things equal that aren't *quite*
-  return (m > n ? 1 : 0) - (m < n ? 1 : 0);
-}
-
-/* This requires that both arrays are already sorted */
-export async function SortedArrayDiff(
-  oldList: string[],
-  newList: string[],
-  addFn?: PathHandlerAll,
-  delFn?: PathHandlerAll,
-): Promise<void> {
-  let oldIndex = 0;
-  let newIndex = 0;
-  for (; oldIndex < oldList.length || newIndex < newList.length; ) {
-    const oldItem = oldIndex < oldList.length ? oldList[oldIndex] : null;
-    const newItem = newIndex < newList.length ? newList[newIndex] : null;
-    const comp = pathCompare(oldItem, newItem);
-    if (comp === 0) {
-      oldIndex++;
-      newIndex++;
-      continue;
-    } else if (comp < 0 && oldItem !== null) {
-      // old item goes "before" new item, so we've deleted old item
-      if (delFn) {
-        const foo = delFn(oldItem);
-        if (isPromise(foo)) {
-          await foo;
-        }
-      }
-      oldIndex++;
-    } else if (comp > 0 && newItem !== null) {
-      // new item goes "before" old item, so we've added new item
-      if (addFn) {
-        const bar = addFn(newItem);
-        if (isPromise(bar)) {
-          await bar;
-        }
-      }
-      newIndex++;
-    }
-  }
-}
-
-export function SortedArrayDiffSync(
-  oldList: string[],
-  newList: string[],
-  addFn?: PathHandlerSync,
-  delFn?: PathHandlerSync,
-): void {
-  let oldIndex = 0;
-  let newIndex = 0;
-  for (; oldIndex < oldList.length || newIndex < newList.length; ) {
-    const oldItem = oldIndex < oldList.length ? oldList[oldIndex] : null;
-    const newItem = newIndex < newList.length ? newList[newIndex] : null;
-    const comp = pathCompare(oldItem, newItem);
-    if (comp === 0) {
-      oldIndex++;
-      newIndex++;
-      continue;
-    } else if (comp < 0 && oldItem !== null) {
-      // old item goes "before" new item, so we've deleted old item
-      if (delFn) {
-        delFn(oldItem);
-      }
-      oldIndex++;
-    } else if (comp > 0 && newItem !== null) {
-      // new item goes "before" old item, so we've added new item
-      if (addFn) {
-        addFn(newItem);
-      }
-      newIndex++;
-    }
-  }
-}
 
 /*
  * Begin crap to deal with overloading and whatnot
@@ -203,14 +125,20 @@ export async function MakeFileIndex(
         skipHiddenFolders: ignoreHidden,
       },
     );
-    fileList = newFileList.sort(pathCompare);
+    fileList = newFileList.sort(NormalizedStringCompare);
     lastScanTime = newLastScanTime;
     await saveFileIndex();
     // Alright, we've got the new list, now call the handlers to
     // post-process any differences from the previous list
     if (delFileFn || addFileFn) {
       // Don't waste time if we don't have funcs to call...
-      await SortedArrayDiff(oldFileList, fileList, addFileFn, delFileFn);
+      await SortedArrayDiff(
+        oldFileList,
+        fileList,
+        NormalizedStringCompare,
+        addFileFn,
+        delFileFn,
+      );
     }
     // TODO: Save the new list back to disk in the .emp file index
   }

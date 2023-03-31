@@ -1,9 +1,15 @@
-import { Type } from '@freik/core-utils';
+import {
+  isArray,
+  isArrayOfString,
+  isMapOf,
+  isString,
+  isUndefined,
+} from '@freik/typechk';
 import { Git } from '../index';
 
 it('Simple git.files tests', async () => {
   const files = await Git.files({ all: true });
-  expect(Type.isArray(files)).toBeTruthy();
+  expect(isArray(files)).toBeTruthy();
   expect(files.length).toBeGreaterThan(950);
   expect(files.length).toBeLessThan(1000);
 
@@ -28,7 +34,7 @@ it('Grouped git.files tests', async () => {
       other: (_fn) => false,
     },
   });
-  if (!Type.isMapOf(files.groups, Type.isString, Type.isArrayOfString)) {
+  if (!isMapOf(files.groups, isString, isArrayOfString)) {
     expect(files).toEqual('wrong type');
   }
   expect(files.remaining.length).toBeGreaterThan(10);
@@ -37,7 +43,7 @@ it('Grouped git.files tests', async () => {
   expect(grps.get('clang')).toBeUndefined();
   expect(grps.get('other')).toBeUndefined();
   const p = grps.get('prettier');
-  if (Type.isUndefined(p)) {
+  if (isUndefined(p)) {
     expect('prettier not defined').toEqual('oops');
     throw 'oops';
   }
