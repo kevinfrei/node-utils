@@ -24,7 +24,8 @@ function Get(name:string) => unknown | void;
 function GetAsync(name:string) => Promise<unknown | void>;
 ```
 
-Given a _string_ name, return an optional data type, or a promise containing that (for the Async version).
+Given a _string_ name, return an optional data type, or a promise containing
+that (for the Async version).
 
 ```typescript
 // aliases: SetSync, Write, WriteSync, Save, SaveSync
@@ -39,10 +40,10 @@ Given a _string_ name and an unknown type, saves that value for future
 ## OpenLocalBrowser
 
 This takes a string URL and tries to open a browser to that location. It
-currently only works on MacOS and Windows, because I have no idea how to do
-this on Linux, and only have a Raspberry Pi to do anything that's actually
-linux (I use WSL for a lovely Ubuntu-ish command line on Windows, but that's
-not the same thing...)
+currently only works on MacOS and Windows, because I have no idea how to do this
+on Linux, and only have a Raspberry Pi to do anything that's actually linux (I
+use WSL for a lovely Ubuntu-ish command line on Windows, but that's not the same
+thing...)
 
 ## FileUtil
 
@@ -68,7 +69,8 @@ function textFileToArray(filePath:string) => Array<string>;
 function textFileToArrayAsync(filePath:string) => Promise<Array<string>>;
 ```
 
-Reads the filePath provided and returns the array of lines of text from the file.
+Reads the filePath provided and returns the array of lines of text from the
+file.
 
 ## PathUtil
 
@@ -78,13 +80,15 @@ A couple helpers for path name creation & manipulation:
 function getTemp(name:string, ext:?string) => string;
 ```
 
-Given a name, and an optional file extension, return a _likely_ unique path to use as a temp file.
+Given a name, and an optional file extension, return a _likely_ unique path to
+use as a temp file.
 
 ```typescript
 function getExtNoDot(fileName:string) => string;
 ```
 
-Returns the file extension of `fileName` _without_ a leading '.' because that's annoying...
+Returns the file extension of `fileName` _without_ a leading '.' because that's
+annoying...
 
 ```typescript
 function changeExt(fileName:string, newExt:string) => string;
@@ -115,4 +119,5 @@ function spawnRes(command:string, args: ?Array<string>, options:?sSO) => boolean
 function spawnResAsync(command:string, args:?Array<string>, options:?sO) => Promise<boolean>;
 ```
 
-These three helpers wrap process spawning from `node.child_process` in self-contained blobs. I'm clearly getting sick of writing documentation...
+These three helpers wrap process spawning from `node.child_process` in
+self-contained blobs. I'm clearly getting sick of writing documentation...

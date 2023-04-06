@@ -1,5 +1,5 @@
 import type { SpawnResult } from './public-defs.js';
-import cp from 'child_process';
+import * as cp from 'child_process';
 
 export async function spawnAsync(
   command: string,

@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import * as crypto from 'node:crypto';
 
 export type Key = { iv: Buffer; key: Buffer };
 const algorithm = 'aes-256-ctr';

@@ -1,12 +1,13 @@
-import { MakeError, MakeQueue, MakeStack, Type } from '@freik/core-utils';
 import { isHiddenFile } from '@freik/is-hidden-file';
+import { promises as fsp } from 'fs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as PathUtil from './PathUtil.js';
+import debugModule from 'debug';
+import { Container, MakeQueue, MakeStack } from '@freik/containers';
+import { isBoolean, isString, isUndefined } from '@freik/typechk';
 
-const fsp = fs.promises;
-
-const err = MakeError('forFiles');
+const err = debugModule('node-utils:forFiles');
 
 export type ForDirsOptions = {
   keepGoing: boolean;
@@ -75,10 +76,10 @@ function fal(dirName: string): boolean {
 function getRecurseFunc(
   opts?: Partial<ForFilesOptions> | Partial<ForDirsOptions>,
 ): (dirName: string) => Promise<boolean> | boolean {
-  if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
+  if (isUndefined(opts) || isUndefined(opts.recurse)) {
     return tru;
   }
-  if (Type.isBoolean(opts.recurse)) {
+  if (isBoolean(opts.recurse)) {
     return opts.recurse ? tru : fal;
   }
   return opts.recurse;
@@ -89,7 +90,7 @@ async function callMaybeFunc(
   val: string,
 ): Promise<boolean> {
   const res = func(val);
-  return Type.isBoolean(res) ? res : await res;
+  return isBoolean(res) ? res : await res;
 }
 
 export async function ForFiles(
@@ -109,7 +110,7 @@ export async function ForFiles(
   const fileMatcher = fileTypes
     ? (str: string): boolean => {
         const uc = str.toLocaleUpperCase();
-        if (Type.isString(fileTypes)) {
+        if (isString(fileTypes)) {
           return uc.endsWith(fileTypes.toLocaleUpperCase());
         }
         const fsfx = fileTypes.map((val) => val.toLocaleUpperCase());
@@ -122,10 +123,10 @@ export async function ForFiles(
       }
     : (): boolean => true;
 
-  const theSeed = Type.isString(seed) ? [seed] : seed;
-  const worklist = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+  const theSeed = isString(seed) ? [seed] : seed;
+  const worklist: Container<string> = depth
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -194,10 +195,10 @@ export async function ForFiles(
 function getRecurseFuncSync(
   opts?: Partial<ForFilesSyncOptions>,
 ): (dirName: string) => boolean {
-  if (Type.isUndefined(opts) || Type.isUndefined(opts.recurse)) {
+  if (isUndefined(opts) || isUndefined(opts.recurse)) {
     return tru;
   }
-  if (Type.isBoolean(opts.recurse)) {
+  if (isBoolean(opts.recurse)) {
     return opts.recurse ? tru : fal;
   }
   return opts.recurse;
@@ -219,7 +220,7 @@ export function ForFilesSync(
   const fileMatcher = fileTypes
     ? (str: string): boolean => {
         const uc = str.toLocaleUpperCase();
-        if (Type.isString(fileTypes)) {
+        if (isString(fileTypes)) {
           return uc.endsWith(fileTypes.toLocaleUpperCase());
         }
         const fsfx = fileTypes.map((val) => val.toLocaleUpperCase());
@@ -231,10 +232,10 @@ export function ForFilesSync(
         return false;
       }
     : (): boolean => true;
-  const theSeed: string[] = Type.isString(seed) ? [seed] : seed;
+  const theSeed: string[] = isString(seed) ? [seed] : seed;
   const worklist = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();
@@ -304,10 +305,10 @@ export async function ForDirs(
   const skipHiddenFolders = opts ? !!opts.skipHiddenFolders : true;
   const hideDots = opts ? !opts.dontAssumeDotsAreHidden : true;
   const followSymlinks = opts ? opts.dontFollowSymlinks : true;
-  const theSeed = Type.isString(seed) ? [seed] : seed;
+  const theSeed = isString(seed) ? [seed] : seed;
   const worklist = depth
-    ? MakeStack<string>(...theSeed)
-    : MakeQueue<string>(...theSeed);
+    ? MakeStack<string>(theSeed)
+    : MakeQueue<string>(theSeed);
   let overallResult = true;
   while (!worklist.empty()) {
     const i = worklist.pop();

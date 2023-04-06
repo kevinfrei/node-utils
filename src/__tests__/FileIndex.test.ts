@@ -1,11 +1,7 @@
 import { promises as fsp } from 'fs';
-import {
-  MakeFileIndex,
-  pathCompare,
-  SortedArrayDiff,
-  SortedArrayDiffSync,
-} from '../FileIndex';
+import { MakeFileIndex } from '../FileIndex';
 import { MakeSuffixWatcher } from '../StringWatcher';
+import { NormalizedStringCompare } from '@freik/text';
 
 async function cleanup() {
   for (const i of ['FileIndexTest', 'FileIndexTest2', 'FileIndexTest3']) {
@@ -26,15 +22,12 @@ it('Make a little File Index', async () => {
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest/');
   const files: string[] = [];
   await fi.forEachFile((pathName: string) => files.push(pathName));
-  expect(files.sort(pathCompare)).toEqual([
+  expect(files.sort(NormalizedStringCompare)).toEqual([
     'file1.txt',
     'file2.txt',
     'file3.tmp',
     'file4.dat',
   ]);
-  expect(pathCompare('a', null)).toBe(-1);
-  expect(pathCompare(null, 'b')).toBe(1);
-  expect(pathCompare(null, null)).toBe(0);
 });
 
 it('Make a little File Index and reload it', async () => {
@@ -42,7 +35,7 @@ it('Make a little File Index and reload it', async () => {
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest/');
   const files: string[] = [];
   await fi.forEachFile((pathName: string) => files.push(pathName));
-  expect(files.sort(pathCompare)).toEqual([
+  expect(files.sort(NormalizedStringCompare)).toEqual([
     'file1.txt',
     'file2.txt',
     'file3.tmp',
@@ -52,7 +45,7 @@ it('Make a little File Index and reload it', async () => {
   expect(fi2.getLocation()).toEqual('src/__tests__/FileIndexTest/');
   const files2: string[] = [];
   await fi2.forEachFile((pathName: string) => files2.push(pathName));
-  expect(files2.sort(pathCompare)).toEqual([
+  expect(files2.sort(NormalizedStringCompare)).toEqual([
     'file1.txt',
     'file2.txt',
     'file3.tmp',
@@ -73,7 +66,10 @@ it('Make a little File Index with only .txt files', async () => {
     files.push(pathName);
     return Promise.resolve();
   });
-  expect(files.sort(pathCompare)).toEqual(['file1.txt', 'file2.txt']);
+  expect(files.sort(NormalizedStringCompare)).toEqual([
+    'file1.txt',
+    'file2.txt',
+  ]);
 });
 
 it('Make a little File Index without .txt files', async () => {
@@ -83,7 +79,10 @@ it('Make a little File Index without .txt files', async () => {
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
-  expect(files.sort(pathCompare)).toEqual(['file3.tmp', 'file4.dat']);
+  expect(files.sort(NormalizedStringCompare)).toEqual([
+    'file3.tmp',
+    'file4.dat',
+  ]);
 });
 
 it('Make a little File Index and see some file movement', async () => {
@@ -94,7 +93,7 @@ it('Make a little File Index and see some file movement', async () => {
   expect(fi.getLocation()).toEqual('src/__tests__/FileIndexTest3/');
   const files: string[] = [];
   fi.forEachFileSync((pathName: string) => files.push(pathName));
-  expect(files.sort(pathCompare)).toEqual([
+  expect(files.sort(NormalizedStringCompare)).toEqual([
     '.hidden.dat',
     'file3.tmp',
     'file4.dat',
@@ -146,19 +145,4 @@ it('Subdirs!', async () => {
     indexFolderLocation: 'src/__tests__/SubdirTest/.customFileIndex.txt',
   });
   expect(fi).toBeDefined();
-});
-
-it('Sorted Array Diff', () => {
-  const arr1 = ['a', 'b', 'd'];
-  const arr2 = ['a', 'c', 'd'];
-  const adds: string[] = [];
-  const subs: string[] = [];
-  SortedArrayDiffSync(
-    arr1,
-    arr2,
-    (add) => adds.push(add),
-    (sub) => subs.push(sub),
-  );
-  expect(adds).toEqual(['c']);
-  expect(subs).toEqual(['b']);
 });

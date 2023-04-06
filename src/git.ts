@@ -1,10 +1,18 @@
-import { Type } from '@freik/core-utils';
+import {
+  chkFieldType,
+  chkObjectOf,
+  chkOneOf,
+  isFunction,
+  isRegex,
+  typecheck,
+} from '@freik/typechk';
 import { exec as execOld } from 'node:child_process';
 import { promisify } from 'node:util';
-const exec = promisify(execOld);
 
-export type GroupEntry = RegExp | ((name: string) => boolean);
-export type Groups = { [keys: string]: GroupEntry };
+const exec = promisify(execOld);
+type FilterFn = (name: string) => boolean;
+export type GroupEntry = RegExp | FilterFn;
+export type Groups = { [keys: string | symbol]: GroupEntry };
 export interface NormalOptions {
   staged?: boolean;
   cwd?: string;
@@ -17,7 +25,12 @@ export type GroupedResult = {
   groups: Map<string, string[]>;
   remaining: string[];
 };
-
+const chkGroupedOptions: typecheck<GroupedOptions> = chkFieldType(
+  'groups',
+  chkObjectOf<FilterFn | RegExp>(
+    chkOneOf<FilterFn, RegExp>(isFunction as typecheck<FilterFn>, isRegex),
+  ),
+);
 export async function files(options: GroupedOptions): Promise<GroupedResult>;
 export async function files(options?: NormalOptions): Promise<string[]>;
 
@@ -35,21 +48,7 @@ export async function files(
     : { encoding: 'utf8' };
   const { stdout } = await exec(cmd, opts);
   const theFiles = stdout.toString().split('\n').slice(0, -1);
-  if (
-    Type.hasType(options, 'groups', (t): t is Groups => {
-      if (Type.isObjectNonNull(t)) {
-        for (const k of Object.keys(t)) {
-          if (
-            !Type.hasType(t, k, Type.isOneOfFn(Type.isFunction, Type.isRegex))
-          ) {
-            return false;
-          }
-        }
-        return true;
-      }
-      return false;
-    })
-  ) {
+  if (chkGroupedOptions(options)) {
     const groups = options.groups;
     const keys = Object.keys(groups);
     const tests = new Map<string, GroupEntry>([
@@ -64,8 +63,7 @@ export async function files(
       tests.forEach((val, key) => {
         if (
           gotIt === '' &&
-          ((Type.isRegex(val) && val.test(file)) ||
-            (Type.isFunction(val) && val(file)))
+          ((isRegex(val) && val.test(file)) || (isFunction(val) && val(file)))
         ) {
           gotIt = key;
         }

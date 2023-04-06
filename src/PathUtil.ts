@@ -1,6 +1,6 @@
-import os from 'os';
-import child from 'child_process';
-import path from 'path';
+import * as os from 'os';
+import * as child from 'child_process';
+import * as path from 'path';
 import { promises as fsp } from 'fs';
 import { promisify } from 'util';
 
