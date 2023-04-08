@@ -1,11 +1,11 @@
+import { Container, MakeQueue, MakeStack } from '@freik/containers';
 import { isHiddenFile } from '@freik/is-hidden-file';
-import { promises as fsp } from 'fs';
+import { isBoolean, isString, isUndefined } from '@freik/typechk';
+import debugModule from 'debug';
 import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import * as path from 'path';
 import * as PathUtil from './PathUtil.js';
-import debugModule from 'debug';
-import { Container, MakeQueue, MakeStack } from '@freik/containers';
-import { isBoolean, isString, isUndefined } from '@freik/typechk';
 
 const err = debugModule('node-utils:forFiles');
 

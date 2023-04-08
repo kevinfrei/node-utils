@@ -1,4 +1,4 @@
-import { ForFiles, ForFilesSync, ForDirs } from '../index';
+import { ForDirs, ForFiles, ForFilesSync } from '../index';
 
 it('Very Basic', () => {
   const seen = Array<number>(7).fill(0);
@@ -150,4 +150,85 @@ it('Basic ForDirs test', async () => {
     { recurse: true, keepGoing: true },
   );
   expect(count).toBe(3);
+});
+
+it('Skipping hidden file tests', async () => {
+  let ga = 0;
+  let gi = 0;
+  let pack = 0;
+  // Filtering
+  const counter = (filename: string): boolean => {
+    switch (filename) {
+      case '.gitattributes':
+        ga++;
+        break;
+      case '.gitignore':
+        gi++;
+        break;
+      case 'package.json':
+        pack++;
+        break;
+    }
+    return true;
+  };
+  await ForFiles('.', counter, {
+    recurse: false,
+    keepGoing: true,
+    skipHiddenFiles: false,
+    dontAssumeDotsAreHidden: true,
+  });
+  expect(ga).toEqual(1);
+  expect(gi).toEqual(1);
+  expect(pack).toEqual(1);
+  await ForFiles('.', counter, {
+    recurse: false,
+    keepGoing: true,
+    skipHiddenFiles: true,
+    dontAssumeDotsAreHidden: true,
+  });
+  expect(ga).toEqual(1);
+  expect(gi).toEqual(2);
+  expect(pack).toEqual(2);
+});
+it('Stragglers', async () => {
+  let jsonCount = 0;
+  await ForFiles(
+    '.',
+    () => {
+      jsonCount++;
+      return true;
+    },
+    { fileTypes: 'json', recurse: false },
+  );
+  expect(jsonCount).toEqual(7);
+  jsonCount = 0;
+  ForFilesSync(
+    '.',
+    () => {
+      jsonCount++;
+      return true;
+    },
+    { fileTypes: 'json', recurse: false },
+  );
+  expect(jsonCount).toEqual(7);
+  jsonCount = 0;
+  await ForFiles(
+    '.',
+    () => {
+      jsonCount++;
+      return true;
+    },
+    { fileTypes: ['gif'], recurse: false },
+  );
+  expect(jsonCount).toEqual(0);
+  jsonCount = 0;
+  ForFilesSync(
+    '.',
+    () => {
+      jsonCount++;
+      return true;
+    },
+    { fileTypes: ['gif'], recurse: false },
+  );
+  expect(jsonCount).toEqual(0);
 });
