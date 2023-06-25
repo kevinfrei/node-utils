@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import * as PathUtil from './PathUtil.js';
-import debugModule from 'debug';
+import { MakeLog } from '@freik/logger';
 import SeqNum from '@freik/seqnum';
 import {
   MakeReaderWriter,
@@ -10,8 +10,7 @@ import {
   SyncFunc,
 } from '@freik/sync';
 
-const log = debugModule('node-utils:persist:log');
-const err = debugModule('node-utils:persist:err');
+const { log, err } = MakeLog('node-utils:persist');
 
 export type ValueUpdateListener = (val: string) => void;
 

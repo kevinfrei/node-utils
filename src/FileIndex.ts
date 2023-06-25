@@ -4,9 +4,9 @@ import { SortedArrayDiff } from '@freik/helpers';
 import { arrayToTextFileAsync, textFileToArrayAsync } from './FileUtil.js';
 import { ForFiles } from './forFiles.js';
 import * as path from './PathUtil.js';
-import debugModule from 'debug';
+import { MakeLog } from '@freik/logger';
 
-const err = debugModule('node-utils:FileIndex');
+const { err } = MakeLog('node-utils:FileIndex');
 
 export type PathHandlerAsync = (pathName: string) => Promise<void>;
 export type PathHandlerSync = (pathName: string) => void;

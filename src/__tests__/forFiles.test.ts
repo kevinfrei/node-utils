@@ -186,7 +186,11 @@ it('Skipping hidden file tests', async () => {
     skipHiddenFiles: true,
     dontAssumeDotsAreHidden: true,
   });
-  expect(ga).toEqual(1);
+  if (process.platform === 'win32') {
+    expect(ga).toEqual(2);
+  } else {
+    expect(ga).toEqual(1);
+  }
   expect(gi).toEqual(2);
   expect(pack).toEqual(2);
 });

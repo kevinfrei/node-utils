@@ -1,7 +1,7 @@
 import * as child_proc from 'child_process';
-import debugModule from 'debug';
+import { MakeLog } from '@freik/logger';
 
-const log = debugModule('node-utils:OpenLocalBrowser');
+const { log } = MakeLog('node-utils:OpenLocalBrowser');
 
 type BufStr = string | Buffer;
 
